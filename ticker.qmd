@@ -1,5 +1,5 @@
 ---
-pagetitle: "Ticker · Engineering Guide"
+pagetitle: "Ticker · Building with AI"
 format:
   revealjs:
     theme: [dark, theme/ticker.scss]
@@ -15,7 +15,7 @@ format:
     preview-links: false
     highlight-style: github-dark
     html-math-method: plain
-    footer: "Ticker · Engineering Guide · ticker-dash.fly.dev"
+    footer: "Ticker · one machine · 291 tests · built in about two days"
     include-in-header: theme/plotly-head.html
     include-after-body: theme/reveal-fixes.js
     mermaid:
@@ -38,14 +38,53 @@ from IPython.display import HTML, display
 
 # Design tokens, taken verbatim from the live app's stylesheet so the deck
 # and the product read as one system.
-PAPER = "#0e1116"   # --paper (dark)
-INK   = "#f5f2ec"   # --ink   (dark)
+PAPER = "#0e1116"
+INK   = "#f5f2ec"
 SLATE = "#1a2028"
 GAIN  = "#2f7d6e"
 LOSS  = "#a8442f"
 BRASS = "#c9a227"
 MUTED = "#8b929c"
 GRID  = "#232a33"
+
+# ---------------------------------------------------------------------------
+# EVIDENCE.  Every number below is measured from the Ticker repository or
+# quoted from its own planning documents. Nothing here is invented.
+#
+#   git log            21 commits, 2026-08-10 .. 2026-09-06, 5 working days
+#   plan.md   Sec.10   per-phase estimates, written before any code existed
+#   prompts.md         "The plan is 8-12 days of work"
+#   cloc-equivalent    line counts by extension, node_modules excluded
+# ---------------------------------------------------------------------------
+
+# plan.md Sec.10 build order: (phase, low, high) in developer-days.
+PHASES = [
+    ("Phase 0 · skeleton",        0.5, 0.5),
+    ("Phase 1 · data in",         1.0, 1.0),
+    ("Phase 2 · live prices",     1.0, 2.0),
+    ("Phase 3 · portfolio",       2.0, 2.0),
+    ("Phase 4 · charts",          1.0, 1.0),
+    ("Phase 5 · chat",            2.0, 3.0),
+    ("Phase 6 · polish & harden", 1.0, 2.0),
+]
+PLAN_LO  = sum(p[1] for p in PHASES)          # 8.5 days
+PLAN_HI  = sum(p[2] for p in PHASES)          # 11.5 days
+PLAN_MID = (PLAN_LO + PLAN_HI) / 2            # 10.0 days
+
+# Reconstructed from commit timestamps. Two methods, both shown:
+#   lower bound  gaps between consecutive commits, capped at 45 min, plus
+#                30 min lead-in for each of the 4 working sessions
+#   upper bound  first-to-last commit span on each working day
+ACTUAL_LO_H, ACTUAL_HI_H = 9.2, 16.2
+HOURS_PER_DAY = 8.0
+ACTUAL_LO = ACTUAL_LO_H / HOURS_PER_DAY       # 1.15 days
+ACTUAL_HI = ACTUAL_HI_H / HOURS_PER_DAY       # 2.03 days
+ACTUAL_MID = (ACTUAL_LO + ACTUAL_HI) / 2      # 1.59 days
+
+SPEEDUP_LO = PLAN_LO / ACTUAL_HI              # most conservative
+SPEEDUP_HI = PLAN_HI / ACTUAL_LO              # most generous
+SPEEDUP_MID = PLAN_MID / ACTUAL_MID
+REDUCTION = 1 - ACTUAL_MID / PLAN_MID
 
 pio.templates["ticker"] = go.layout.Template(
     layout=dict(
@@ -57,8 +96,6 @@ pio.templates["ticker"] = go.layout.Template(
                    tickfont=dict(family="IBM Plex Mono, monospace", size=13, color=MUTED)),
         yaxis=dict(gridcolor=GRID, zerolinecolor=GRID, linecolor=GRID,
                    tickfont=dict(family="IBM Plex Mono, monospace", size=13, color=MUTED)),
-        # Legend sits *below* the plot: the top strip is reserved for the
-        # updatemenu buttons, and the two collide if both live up there.
         legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=13, color=MUTED),
                     orientation="h", yanchor="top", y=-0.14, x=0),
         margin=dict(l=64, r=28, t=60, b=76),
@@ -67,33 +104,17 @@ pio.templates["ticker"] = go.layout.Template(
     )
 )
 pio.templates.default = "ticker"
-
-# Fixed seed. Every illustrative series in this deck is reproducible.
 rng = np.random.default_rng(20260907)
-
 CONFIG = {"displayModeBar": False, "responsive": True}
 
-# Emit charts as plain HTML rather than via fig.show().
-#
-# fig.show() goes through a plotly *renderer*, and every renderer either
-# fetches plotly.js from a CDN or (the "notebook" one) pulls requirejs and
-# jquery from a CDN to load it — either way the deck stops working without a
-# network. The library is loaded from libs/plotly.min.js in <head> instead
-# (see theme/plotly-head.html), so each chart emits only its own init call.
 def show(fig):
+    """Emit a chart as plain HTML; plotly.js is loaded once from <head>."""
     height = fig.layout.height or 500
-    html = pio.to_html(
-        fig,
-        include_plotlyjs=False,          # loaded once, from <head>
-        full_html=False,
-        config=CONFIG,
-        default_width="100%",
-        default_height=f"{height}px",
-    )
-    display(HTML(html))
+    display(HTML(pio.to_html(
+        fig, include_plotlyjs=False, full_html=False, config=CONFIG,
+        default_width="100%", default_height=f"{height}px")))
 
 def menu_style(**kw):
-    """Shared styling for Plotly's updatemenus, in the deck's palette."""
     base = dict(
         type="buttons", direction="right",
         bgcolor=SLATE, bordercolor=GRID, borderwidth=1,
@@ -107,146 +128,342 @@ def menu_style(**kw):
 
 ##  {#title .center}
 
-::: {style="max-width:26em"}
-[Engineering Guide · v1.0 · September 2026]{.kicker}
+::: {style="max-width:27em"}
+[A case study in AI-assisted development · September 2026]{.kicker}
 
-::: {style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:4.6em;line-height:0.95;letter-spacing:-0.04em;margin:0.1em 0 0 0"}
+::: {style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:4.4em;line-height:0.95;letter-spacing:-0.04em;margin:0.1em 0 0 0"}
 Ticker
 :::
 
 ::: {.title-lead}
-A single-machine stock dashboard: live prices streamed to the browser, a
-portfolio derived from an append-only ledger, and an AI analyst that can
-propose changes but **never make them**.
+A live stock dashboard with a streaming price feed, a FIFO portfolio ledger,
+and an AI analyst that can propose changes but never make them.
+
+**Specified, built, tested and deployed in about two working days.**
 :::
 
-::: {style="margin-top:1.4em;font-family:'IBM Plex Mono',monospace;font-size:0.4em;letter-spacing:0.14em;text-transform:uppercase;color:#8b929c"}
-AAPL [187.42]{data-tick="187.42" style="color:#2f7d6e"} &nbsp;·&nbsp;
-MSFT [418.09]{data-tick="418.09" style="color:#2f7d6e"} &nbsp;·&nbsp;
-NVDA [126.55]{data-tick="126.55" style="color:#a8442f"} &nbsp;·&nbsp;
+::: {style="margin-top:1.2em;font-family:'IBM Plex Mono',monospace;font-size:0.4em;letter-spacing:0.14em;text-transform:uppercase;color:#8b929c"}
+AAPL [319.97]{data-tick="319.97" style="color:#2f7d6e"} &nbsp;·&nbsp;
+MSFT [499.70]{data-tick="499.70" style="color:#2f7d6e"} &nbsp;·&nbsp;
+NVDA [230.36]{data-tick="230.36" style="color:#a8442f"} &nbsp;·&nbsp;
 ticker-dash.fly.dev
 :::
 :::
 
 ::: {.notes}
-Fifteen minutes. The thesis: this is a small system that takes two ideas
-seriously — that a ledger is the only truth, and that a model may propose but
-never execute. Everything else follows from those two.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 0:50]</span>
+
+Good morning, everyone. Thanks for making the time.
+
+I want to start with a question, and I'd genuinely like you to think about your answer before I give you mine.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE — LET THIS LAND BEFORE CONTINUING]</span>
+
+How much working software can one person build in two days?
+
+Not a prototype. Not a demo that falls over when you click the wrong thing. I mean a real application. Live data, a database, a proper front end, tests, deployed to the internet, running right now.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE — 2 SECONDS]</span>
+
+A year ago my honest answer would have been: not much. Maybe a rough prototype.
+
+So I ran the experiment on myself. This is Ticker. It's a live stock dashboard with an AI analyst built into it. I specified it, built it, tested it, and deployed it — and the whole thing took about two working days.
+
+Over the next fifteen minutes I want to show you what it does, and then I want to be really specific about how it got built. Because the interesting part isn't the app. The interesting part is what the process says about how software gets made now.
 :::
 
-## Project at a glance
-
-[Five layers · one process · three rented services]{.kicker}
-
-::: {.stat-grid .cols-3}
-::: {.stat}
-[Live]{.label}[ticker-dash.fly.dev]{.value}[One always-on machine, public HTTPS]{.note}
-:::
-::: {.stat}
-[Backend]{.label}[Python 3.12 · FastAPI]{.value}[14 REST routes · 1 WebSocket · 1 SSE]{.note}
-:::
-::: {.stat}
-[Frontend]{.label}[React 18 · Vite]{.value}[Zustand for prices, TanStack for REST]{.note}
-:::
-::: {.stat}
-[Tests]{.label}[[291]{.value .num}]{.value}[pytest · ruff · tsc · docker build]{.note}
-:::
-::: {.stat}
-[Machines]{.label}[[1]{.value .num}]{.value}[Pinned explicitly, not by default]{.note}
-:::
-::: {.stat}
-[Cost]{.label}[[~$3]{.value .num}]{.value}[per month, all in under $10]{.note}
-:::
-:::
-
-::: {.notes}
-Read the last three tiles together: 291 tests, one machine, three dollars. The
-interesting number is the **1**. It is a correctness constraint, not a budget one.
-:::
-
-## One process, on purpose
+## The question I actually wanted to answer {.center}
 
 ::: {.split}
 ::: {}
 ::: {.pull}
-Everything below the browser runs as a single Python process on a single machine.
+Where does the time go when an AI agent writes most of the code?
 :::
 
-::: {style="margin-top:0.8em;font-size:0.62em;line-height:1.55;color:#8b929c"}
-That is a **deliberate constraint, not a limitation of scale.**
+::: {style="font-size:0.5em;line-height:1.6;color:#8b929c;margin-top:0.9em"}
+There is a comfortable story that says AI writes the code and the job is
+finished. There is an equally comfortable story that says none of it works and
+you rewrite it all anyway.
+
+**Neither matched what I saw.** So I kept the receipts: a spec written before
+any code, a decision log, one commit per phase, and every defect recorded
+where it surfaced.
 :::
 
-::: {.stages style="margin-top:0.6em"}
-::: {.stage}
-[01]{.n}[The market feed allows **one connection per key**. [A second machine would open a second socket.]{.m}]{.t}
-:::
-::: {.stage}
-[02]{.n}[The database is **a file on a disk that cannot be mounted twice**. [Two copies, two divergent ledgers.]{.m}]{.t}
-:::
+::: {style="margin-top:1em;font-size:0.44em;color:#8b929c"}
+Everything in this talk is measured from that repository.
 :::
 :::
 
 ::: {}
-[The five layers]{.kicker}
+::: {.card}
+[The claim]{.tag}[AI is an accelerator, not an author]{.h4}
 
-::: {style="font-size:0.5em;line-height:1.5"}
-**Data** — rented feeds + SQLite<br>
-[Finnhub, Twelve Data, Anthropic. Local state in one SQLite file on a Fly volume.]{.muted}
+It compressed the work. It did not remove the engineering.
 
-**Processing** — providers + services<br>
-[Provider interface, TTL cache, price hub, FIFO lot engine, chat loop.]{.muted}
-
-**Application** — FastAPI<br>
-[14 REST routes, one WebSocket, one SSE stream, all behind a session gate.]{.muted}
-
-**Visualisation** — React + lightweight-charts<br>
-[Zustand for high-frequency prices, TanStack Query for REST.]{.muted}
-
-**Output** — one page, one origin<br>
-[The API serves the built SPA: one deploy, and no CORS.]{.muted}
+Direction, architecture, verification and the decision to ship stayed with me — and that is exactly where the remaining time went.
 :::
 :::
 :::
 
 ::: {.notes}
-The "one origin" decision at the bottom is why there is no CORS configuration
-anywhere in the codebase. It also means you cannot fetch this API from a slide
-deck — I tried.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 1:35]</span>
+
+So here's the question I actually set out to answer.
+
+When you hand most of the typing to an AI agent, where does the time go? What disappears, and what stubbornly doesn't?
+
+There are two easy stories people tell about this. One is that AI writes your code now and engineering is basically over. The other is that everything it produces is garbage and you throw it away and do it properly.
+
+<span style="color:#c1121f;font-weight:700">[SLOW DOWN HERE]</span>
+
+Neither of those matched what I actually experienced. The truth was more interesting, and honestly more useful.
+
+So I treated the project like an experiment. I kept the receipts. I wrote the specification before any code existed. I kept a decision log. I committed one phase at a time, so the history is readable. And I recorded every bug by where it surfaced.
+
+That means everything I'm about to tell you — every number, every time estimate — comes out of that repository. I'm not going to give you a vibe. I'm going to show you the evidence.
+
+Here's the claim I'll be defending: AI acted as an accelerator, not an author. It compressed the work dramatically. It did not remove the engineering. And the parts that didn't compress turn out to be the interesting parts.
+
+Let me show you what got built.
 :::
 
-## Figure 1 · Runtime architecture
+## What I built
 
-[How the system is layered, end to end]{.kicker}
+[One process · one machine · three rented services]{.kicker}
+
+::: {.stat-grid .cols-4}
+::: {.stat}
+[Backend]{.label}[[7,963]{.value .num}]{.value}[lines of Python · FastAPI · 14 REST routes, a WebSocket and an SSE stream]{.note}
+:::
+::: {.stat}
+[Frontend]{.label}[[3,033]{.value .num}]{.value}[lines of TypeScript · React 18, Zustand, TanStack Query]{.note}
+:::
+::: {.stat}
+[Tests]{.label}[[291]{.value .num}]{.value}[passing · 241 test functions across 15 files]{.note}
+:::
+::: {.stat}
+[Running cost]{.label}[[~$3]{.value .num}]{.value}[per month, all in · one always-on machine]{.note}
+:::
+:::
+
+::: {.cols style="margin-top:0.9em"}
+::: {.card}
+[Live]{.tag}[Streaming prices]{.h4}
+
+A single upstream socket, coalesced to at most four updates per second per symbol, fanned out to every open browser.
+:::
+::: {.card}
+[Correct]{.tag}[A real FIFO ledger]{.h4}
+
+Positions, cost basis and realised P/L are recomputed from an append-only transaction log. No stored share count.
+:::
+::: {.card}
+[Safe]{.tag}[An analyst that cannot trade]{.h4}
+
+The model reads your holdings and the web, and proposes changes. Nothing is written until you press Confirm.
+:::
+:::
+
+::: {.notes}
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 2:20]</span>
+
+This is what came out the other end.
+
+Roughly eight thousand lines of Python on the back end, three thousand lines of TypeScript on the front end, and two hundred and ninety-one passing tests. It runs on one machine and costs about three dollars a month.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE THREE CARDS ALONG THE BOTTOM]</span>
+
+And it does three genuinely non-trivial things.
+
+It streams live prices. There's one connection to the market, and it fans out to every browser that's open.
+
+It keeps a real portfolio ledger. And I mean real — first-in-first-out lot accounting, the same method your broker uses for tax reporting. Your positions and your profit and loss are recalculated from the transaction history every single time.
+
+And it has an AI analyst built in that can read your holdings and search the web, and can suggest a change to your portfolio — but physically cannot make that change. It can only propose. You have to confirm.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
+
+Rather than talk about it, let me just show you the thing running.
+:::
+
+##  {#live-demo background-iframe="https://ticker-dash.fly.dev/" background-interactive="true"}
+
+[Live · ticker-dash.fly.dev]{.demo-badge}
+
+::: {.demo-overlay}
+[If the frame is blank, the session cookie was blocked]{.hint}
+[Open live demo ↗](https://ticker-dash.fly.dev/){target="_blank" rel="noopener"}
+:::
+
+::: {.notes}
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 2:00 — TOTAL 4:20]</span>
+
+<span style="color:#c1121f;font-weight:700">[BEFORE THE TALK: LOG IN TO ticker-dash.fly.dev IN ANOTHER TAB OF THIS SAME BROWSER. IF THE FRAME SHOWS THE PASSPHRASE GATE, CLICK THE GOLD "OPEN LIVE DEMO" BUTTON, BOTTOM RIGHT, AND DEMO IN A REAL TAB.]</span>
+
+So this is the actual application. This is not a screenshot — this is running on a server in New Jersey right now.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE TICKER TAPE ACROSS THE TOP — DO NOT CLICK YET]</span>
+
+Across the top is the ticker tape. When the market is open, those digits flip as trades come in. Each symbol updates independently — one price change repaints one row, not the whole table. That sounds like a small detail. It's actually the hardest engineering problem in the app, and I'll come back to it in a minute.
+
+<span style="color:#c1121f;font-weight:700">[SCROLL DOWN TO THE POSITIONS TABLE]</span>
+
+Down here is the portfolio. Cost basis, unrealised profit and loss, allocation.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT ANY VALUE SHOWING AN EM DASH, OR AT "MARKET CLOSED" IF OUT OF HOURS]</span>
+
+And notice this — where a price isn't available, it shows a dash. Not a zero. That's deliberate. A zero looks like a real number and quietly lies to you. This was a rule I wrote into the spec before any code existed, and I'll show you that document shortly.
+
+<span style="color:#c1121f;font-weight:700">[CLICK INTO THE ANALYST PANEL ON THE RIGHT. TYPE: "How is my portfolio doing?" AND SEND.]</span>
+
+Now, the analyst. I'll ask it something about the portfolio.
+
+<span style="color:#c1121f;font-weight:700">[WAIT FOR THE RESPONSE TO STREAM IN — ABOUT 5 SECONDS. DO NOT TALK OVER IT.]</span>
+
+It's reading my actual holdings to answer that — it's calling into the same code the rest of the dashboard uses.
+
+<span style="color:#c1121f;font-weight:700">[NOW TYPE: "Add 10 shares of NVDA" AND SEND. WAIT FOR THE CONFIRM CARD TO APPEAR.]</span>
+
+Here's the part I want you to see. I'm going to ask it to change my portfolio.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE CONFIRM CARD. DO NOT CLICK CONFIRM.]</span>
+
+It didn't do it. It produced a proposal, and it's waiting for me.
+
+And this isn't the model being polite. The code that handles those tool calls is handed a read-only object. It has no database connection at all. It cannot write, because it isn't holding anything capable of writing.
+
+<span style="color:#c1121f;font-weight:700">[CLICK DISMISS. THEN RETURN TO THE SLIDES.]</span>
+
+I'll decline that one.
+
+That's the product. Now — the actual subject of this talk. How long should something like that take to build?
+:::
+
+## The part that was genuinely hard {.center}
+
+[The engineering problem at the centre of the app]{.kicker}
+
+```{python}
+#| label: rate-mismatch
+
+DURATION, TRADES_SEC = 3.0, 300
+N = int(DURATION * TRADES_SEC)
+t = np.sort(rng.uniform(0, DURATION, N))
+price = 187.40 + np.cumsum(rng.normal(0, 0.006, N))
+
+def coalesce(interval_ms):
+    """PriceHub.flush(): latest price per symbol, at most once per interval."""
+    step = interval_ms / 1000.0
+    xs, ys = [], []
+    for e in np.arange(step, DURATION + step, step):
+        taken = price[t <= e]
+        if len(taken):
+            xs.append(e); ys.append(taken[-1])
+    return xs, ys
+
+x250, y250 = coalesce(250)
+
+def note(ms, n_out):
+    return [dict(
+        x=0.02, y=0.97, xref="paper", yref="paper",
+        xanchor="left", yanchor="top", showarrow=False, align="left",
+        font=dict(family="IBM Plex Mono, monospace", size=17, color=INK),
+        bgcolor="rgba(26,32,40,0.85)", bordercolor=BRASS, borderwidth=1, borderpad=9,
+        text=(f"<b>{N} prints in</b>  →  <b style='color:{BRASS}'>{n_out} frames out</b>"
+              f"<br><span style='font-size:13px;color:{MUTED}'>"
+              f"flush every {ms} ms · {N/max(n_out,1):.0f}× reduction</span>"))]
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(
+    x=t, y=price, mode="markers", name=f"trades arriving · {TRADES_SEC}/s",
+    marker=dict(size=3.4, color=MUTED, opacity=0.5),
+    hovertemplate="trade<br>%{x:.3f}s · $%{y:.2f}<extra></extra>"))
+fig.add_trace(go.Scatter(
+    x=x250, y=y250, mode="lines+markers", name="what the browser receives",
+    line=dict(color=BRASS, width=2.5, shape="hv"),
+    marker=dict(size=9, color=BRASS, line=dict(color=PAPER, width=2)),
+    hovertemplate="flush<br>%{x:.3f}s · $%{y:.2f}<extra></extra>"))
+
+buttons = []
+for ms in (100, 250, 1000):
+    xs, ys = coalesce(ms)
+    buttons.append(dict(label=f"  {ms} ms  ", method="update",
+        args=[{"x": [t, xs], "y": [price, ys]}, {"annotations": note(ms, len(xs))}]))
+
+fig.update_layout(
+    height=470, autosize=True, annotations=note(250, len(x250)),
+    xaxis=dict(title="seconds", range=[0, DURATION]),
+    yaxis=dict(title="price", tickprefix="$"),
+    updatemenus=[menu_style(buttons=buttons, active=1)],
+    hovermode="closest")
+show(fig)
+```
+
+[Illustrative of the ratio described in the spec, not a recording of real trades. **This is the kind of problem no amount of code generation solves for you** — you have to know it exists.]{.caption}
+
+::: {.notes}
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:15 — TOTAL 5:35]</span>
+
+I want to spend a minute on this, because it's the thing that makes the difference between a demo and an application.
+
+A liquid stock like Apple prints hundreds of individual trades every second. The grey cloud you're looking at is three seconds of that. About nine hundred price updates.
+
+A browser cannot redraw nine hundred times in three seconds. If you just pipe that feed straight through, the tab locks up. The page becomes unusable.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE GOLD STAIRCASE LINE]</span>
+
+The gold line is what the browser actually receives. The server keeps the newest price for each symbol in memory, and flushes at most once every two hundred and fifty milliseconds. Nine hundred updates in, twelve out.
+
+<span style="color:#c1121f;font-weight:700">[CLICK THE "100 ms" BUTTON]</span>
+
+I can change that window. At a hundred milliseconds it tracks the market more closely — but you've quadrupled the traffic to every connected browser.
+
+<span style="color:#c1121f;font-weight:700">[CLICK THE "1000 ms" BUTTON]</span>
+
+At one second it's cheap, but look — you can see it lagging behind the real price. It feels sluggish.
+
+<span style="color:#c1121f;font-weight:700">[CLICK BACK TO "250 ms"]</span>
+
+Two hundred and fifty milliseconds is the compromise I shipped.
+
+<span style="color:#c1121f;font-weight:700">[EMPHASIZE THIS NEXT LINE]</span>
+
+Now — here's why this slide is in the talk. No AI model was going to tell me this problem existed. I had to know that a real market feed will drown a browser, decide that coalescing was the answer, and pick the number. I wrote that requirement into the specification before any code was generated.
+
+The agent implemented it well, and quickly. But the problem, and the choice, were mine.
+
+So that's the app, and that's the hardest part of it. Let's talk about what building it would normally involve.
+:::
+
+## Under the hood
+
+[Five layers, one process, three rented services]{.kicker}
 
 ```{mermaid}
 %%{init: {'theme':'base',
   'fontFamily':'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
-  'flowchart':{'htmlLabels':true,'useMaxWidth':true,'curve':'basis','nodeSpacing':26,'rankSpacing':60},
+  'flowchart':{'htmlLabels':true,'useMaxWidth':true,'curve':'basis','nodeSpacing':26,'rankSpacing':58},
   'themeVariables':{
   'background':'#0e1116','primaryColor':'#1a2028','primaryTextColor':'#f5f2ec',
   'primaryBorderColor':'#232a33','lineColor':'#5c6672','fontSize':'14px',
-  'clusterBkg':'rgba(26,32,40,0.32)','clusterBorder':'#2b3441',
   'edgeLabelBackground':'#0e1116'}}}%%
 flowchart LR
   FS["Finnhub socket<br/>trades"]
   FQ["Finnhub REST<br/>quotes · search"]
   TD["Twelve Data<br/>daily bars"]
   AN["Anthropic<br/>Messages API"]
-
   CP["CompositeProvider<br/>routes by capability"]
   CA["CachingProvider<br/>quotes 5s · candles 60s"]
-
   PH["PriceHub<br/>coalesce 250 ms"]
-  LE["Lot engine<br/>FIFO · realized P/L"]
+  LE["Lot engine<br/>FIFO · realised P/L"]
   PF["Performance<br/>value over time"]
   CS["ChatService<br/>propose only"]
-
   WS["/ws/prices"]
   RE["/api/* REST"]
   SS["/api/chat/stream"]
-
   ZS["Zustand store<br/>keyed by symbol"]
-  TQ["TanStack Query<br/>portfolio · candles"]
+  TQ["TanStack Query"]
   DB[("SQLite WAL<br/>Fly volume")]
 
   FS --> PH --> WS --> ZS
@@ -270,163 +487,179 @@ flowchart LR
   class DB store
 ```
 
-[Grey is rented, slate is ours, green is the disk. Left to right: **sources → providers → services → API → browser**, all behind one session gate. The bottom row is the pushed price path — the next slide follows it.]{.caption}
+[Grey is rented, slate is mine, green is the disk. **The layering was decided before any code was written** — that decision is why swapping a failed data provider later cost one file.]{.caption}
 
 ::: {.notes}
-Five bands, read top to bottom. Rented services in grey, our modules in slate,
-the database in green. Note what SQLite touches: the lot engine and performance
-only. Nothing on the price path goes near it.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 6:15]</span>
+
+<span style="color:#c1121f;font-weight:700">[DO NOT SPEND MORE THAN 40 SECONDS ON THIS DIAGRAM. DO NOT READ THE BOXES OUT.]</span>
+
+Very quickly, so you can see it's a real system and not a toy.
+
+Grey boxes on the left are services I rent. Everything in the middle is mine. The green cylinder is the database.
+
+<span style="color:#c1121f;font-weight:700">[TRACE THE BOTTOM ROW WITH THE CURSOR, LEFT TO RIGHT]</span>
+
+The bottom row is the live price path — socket, coalescing, WebSocket, browser.
+
+The one thing I'd point out is that provider layer near the left. I put an interface there before I wrote any provider code. That turned out to matter, and I'll tell you why in a moment.
+
+So: that's what got built. Now the real question — what would this normally take?
 :::
 
-## Figure 1 · The gold path
+## What this normally takes
 
-[The only route that is pushed rather than requested]{.kicker}
-
-::: {.split}
-::: {}
-```{mermaid}
-%%{init: {'theme':'base',
-  'fontFamily':'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
-  'flowchart':{'htmlLabels':true,'useMaxWidth':true,'curve':'basis','rankSpacing':40},
-  'themeVariables':{
-  'background':'#0e1116','primaryColor':'#1a2028','primaryTextColor':'#f5f2ec',
-  'primaryBorderColor':'#232a33','lineColor':'#5c6672','fontSize':'15px',
-  'edgeLabelBackground':'#0e1116'}}}%%
-flowchart TB
-  FS["Finnhub trade socket"]
-  PH["PriceHub<br/>coalesce 250 ms"]
-  WS["/ws/prices"]
-  ZS["Zustand price store"]
-  TP["TickerTape"]
-
-  FS -->|"hundreds / second"| PH
-  PH -->|"≤ 4 / second / symbol"| WS
-  WS -->|"tick"| ZS
-  ZS -->|"render"| TP
-
-  classDef gold fill:#2a2415,stroke:#c9a227,stroke-width:2.5px,color:#f5f2ec
-  class FS,PH,WS,ZS,TP gold
-```
-:::
-
-::: {}
-::: {.pull style="font-size:1.15em"}
-The rate mismatch is the design problem.
-:::
-
-::: {style="font-size:0.5em;line-height:1.55;color:#8b929c;margin-top:0.7em"}
-A liquid symbol prints **hundreds of trades a second**. A browser cannot redraw
-that often.
-
-The `PriceHub` keeps the latest price per symbol and flushes at most every
-**250 ms**, so the browser receives a bounded trickle.
-
-The store is keyed by symbol, so **one tick re-renders one row** — not the table.
-:::
-
-::: {.card style="margin-top:0.9em"}
-[Invariant]{.tag}[Track A never sees the database]{.h4}
-
-A price is not a fact worth persisting. It is overwritten, coalesced, pushed, and forgotten.
-:::
-:::
-:::
-
-::: {.notes}
-This is the slide to slow down on. Everything gold is pushed; everything else
-in the system is requested. The next slide shows what that ratio actually
-looks like.
-:::
-
-## The rate mismatch {.center}
-
-[Figure · what coalescing actually does]{.kicker}
+[Developer-days by discipline — from the project's own spec]{.kicker}
 
 ```{python}
-#| label: rate-mismatch
+#| label: skills
 
-DURATION   = 3.0      # seconds on screen
-TRADES_SEC = 300      # "hundreds per second"
-N = int(DURATION * TRADES_SEC)
+# plan.md Sec.10 gives an estimate per phase. Mapping each phase to the
+# discipline that would own it in a conventional team gives the shape of the
+# work. Midpoints used where the spec gave a range.
+DISCIPLINES = [
+    ("Backend · APIs, services, realtime", 3.25, "Backend engineer"),
+    ("Frontend · React, state, UI",        2.25, "Frontend engineer"),
+    ("Data · schema, FIFO ledger, SQL",    1.50, "Data / backend"),
+    ("AI integration · tools, streaming",  1.25, "Backend engineer"),
+    ("Design & UX · the Sec.8.2 pass",     0.75, "Designer"),
+    ("DevOps · Docker, Fly, CI/CD",        0.50, "Platform engineer"),
+    ("Testing · 291 tests",                0.50, "Whoever is left"),
+]
+ROLE_COLOUR = {
+    "Backend engineer": BRASS, "Frontend engineer": GAIN,
+    "Data / backend": "#7a8794", "Designer": LOSS,
+    "Platform engineer": "#5c6672", "Whoever is left": "#3f4854",
+}
+labels = [d[0] for d in DISCIPLINES]
+days   = [d[1] for d in DISCIPLINES]
+roles  = [d[2] for d in DISCIPLINES]
 
-# A plausible intraday walk. The price is scenery; the *density* is the point.
-t = np.sort(rng.uniform(0, DURATION, N))
-price = 187.40 + np.cumsum(rng.normal(0, 0.006, N))
+fig = go.Figure(go.Bar(
+    x=days, y=labels, orientation="h",
+    marker=dict(color=[ROLE_COLOUR[r] for r in roles],
+                line=dict(color=PAPER, width=1)),
+    customdata=roles,
+    hovertemplate="<b>%{y}</b><br>%{customdata}<br>%{x} developer-days<extra></extra>",
+    text=[f"  {d}d" for d in days], textposition="outside", cliponaxis=False,
+    textfont=dict(family="IBM Plex Mono, monospace", size=14, color=INK)))
 
-def coalesce(interval_ms):
-    """PriceHub.flush(): last price per symbol, at most once per interval."""
-    step = interval_ms / 1000.0
-    edges = np.arange(step, DURATION + step, step)
-    xs, ys = [], []
-    for e in edges:
-        taken = price[t <= e]
-        if len(taken):
-            xs.append(e)
-            ys.append(taken[-1])
-    return xs, ys
-
-x250, y250 = coalesce(250)
-
-def note(interval_ms, n_out):
-    return [dict(
-        x=0.02, y=0.97, xref="paper", yref="paper",
-        xanchor="left", yanchor="top", showarrow=False, align="left",
-        font=dict(family="IBM Plex Mono, monospace", size=17, color=INK),
-        bgcolor="rgba(26,32,40,0.85)", bordercolor=BRASS, borderwidth=1,
-        borderpad=9,
-        text=(f"<b>{N} prints in</b>  →  <b style='color:{BRASS}'>{n_out} frames out</b>"
-              f"<br><span style='font-size:13px;color:{MUTED}'>"
-              f"flush every {interval_ms} ms · {N/max(n_out,1):.0f}× reduction</span>"),
-    )]
-
-fig = go.Figure()
-
-# Every trade that arrives on the socket.
-fig.add_trace(go.Scatter(
-    x=t, y=price, mode="markers", name=f"trade prints · {TRADES_SEC}/s",
-    marker=dict(size=3.4, color=MUTED, opacity=0.5),
-    hovertemplate="print<br>%{x:.3f}s · $%{y:.2f}<extra></extra>",
-))
-
-# What the browser is actually sent.
-fig.add_trace(go.Scatter(
-    x=x250, y=y250, mode="lines+markers", name="pushed to browser",
-    line=dict(color=BRASS, width=2.5, shape="hv"),
-    marker=dict(size=9, color=BRASS, line=dict(color=PAPER, width=2)),
-    hovertemplate="flush<br>%{x:.3f}s · $%{y:.2f}<extra></extra>",
-))
-
-buttons = []
-for ms in (100, 250, 1000):
-    xs, ys = coalesce(ms)
-    buttons.append(dict(
-        label=f"  {ms} ms  ",
-        method="update",
-        args=[{"x": [t, xs], "y": [price, ys]}, {"annotations": note(ms, len(xs))}],
-    ))
+fig.add_annotation(
+    x=0.99, y=0.10, xref="paper", yref="paper", xanchor="right", showarrow=False,
+    align="right", font=dict(family="IBM Plex Mono, monospace", size=16, color=INK),
+    bgcolor="rgba(26,32,40,0.9)", bordercolor=BRASS, borderwidth=1, borderpad=10,
+    text=(f"<b>{PLAN_LO:.1f} – {PLAN_HI:.1f} developer-days</b>"
+          f"<br><span style='font-size:13px;color:{MUTED}'>"
+          f"across 5–6 specialisms · estimated in plan.md §10<br>"
+          f"before a line of code existed</span>"))
 
 fig.update_layout(
-    height=560, autosize=True,
-    annotations=note(250, len(x250)),
-    xaxis=dict(title="seconds", range=[0, DURATION]),
-    yaxis=dict(title="price", tickprefix="$"),
-    updatemenus=[menu_style(buttons=buttons, active=1)],
-    hovermode="closest",
-)
+    height=430, autosize=True, bargap=0.38, showlegend=False,
+    xaxis=dict(title="developer-days", range=[0, 4.2]),
+    yaxis=dict(autorange="reversed",
+               tickfont=dict(family="Instrument Sans", size=14, color=INK)),
+    margin=dict(l=330, r=80, t=20, b=52))
 show(fig)
 ```
 
-[Illustrative — the coalescing ratio described in the guide, not a recording of real trades. Try the flush interval: 100 ms is smoother and four times the traffic; 1000 ms is cheap and visibly laggy. 250 ms is the shipped compromise.]{.caption}
-
 ::: {.notes}
-Click the buttons. At 100 ms the gold line hugs the cloud but you have
-quadrupled the frames. At 1000 ms you can see the staircase lag behind the
-market. 250 ms is where it stops looking laggy and stops costing much.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:05 — TOTAL 7:20]</span>
+
+Here's where the numbers start, and I want to be precise about where they come from.
+
+Before I wrote any code, I wrote a specification. In it I broke the work into seven phases and I estimated each one. That estimate is timestamped in the repository, and critically — I made it before I knew how long it would actually take. So it's not a number I reverse-engineered to make myself look good.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE BOX IN THE BOTTOM RIGHT]</span>
+
+Added up, the spec says eight and a half to eleven and a half developer-days.
+
+What this chart does is take those same estimates and group them by the discipline that would normally own the work.
+
+<span style="color:#c1121f;font-weight:700">[RUN THE CURSOR DOWN THE BARS AS YOU LIST THEM]</span>
+
+Back end — APIs, services, the real-time layer. Front end — React, state management, the interface. Data — the database schema and the FIFO ledger. AI integration. Design. DevOps. Testing.
+
+<span style="color:#c1121f;font-weight:700">[SLOW DOWN HERE]</span>
+
+Now look at that list as a staffing question. In most organisations that isn't one person. That's a back-end engineer, a front-end engineer, someone comfortable with data modelling, a designer, and somebody who owns deployment. Five or six specialisms.
+
+And that's the honest baseline. Two working weeks of effort, spread across a small team.
+
+So — what actually happened?
 :::
 
-## Figure 2 · Three paths a change can take
+## It started with a spec, not a prompt
 
-[Only track B, and the final step of track C, reach the database]{.kicker}
+::: {.split}
+::: {}
+::: {.stat-grid .cols-3}
+::: {.stat}
+[plan.md]{.label}[[606]{.value .num}]{.value}[lines · §1–§14. Architecture, data model, API surface, the design system, deployment, and the build order.]{.note}
+:::
+::: {.stat}
+[CLAUDE.md]{.label}[[342]{.value .num}]{.value}[lines · the decisions I did not want re-litigated in session nine.]{.note}
+:::
+::: {.stat}
+[prompts.md]{.label}[[116]{.value .num}]{.value}[lines · how each phase was to be handed to the agent, and what to withhold.]{.note}
+:::
+:::
+
+::: {style="margin-top:1em;font-size:0.46em;line-height:1.6;color:#8b929c"}
+**1,064 lines of direction, written before the first line of code.** This is the
+part that did not compress — and the part that made the rest of it fast.
+:::
+:::
+
+::: {}
+::: {.card}
+[From prompts.md]{.tag}[My own instruction to myself]{.h4}
+
+*"Do not paste one giant 'build the whole thing' prompt. The plan is 8–12 days of work; a single request produces a large volume of untested code that all fails together, and you lose the ability to tell which part is wrong. Run one phase per session instead."*
+:::
+
+::: {.card style="margin-top:0.7em"}
+[Also from prompts.md]{.tag}[Who runs the dangerous commands]{.h4}
+
+*"Let Claude write code, build images, and run tests. You run `fly deploy`, `fly secrets set`, and anything touching the volume. Deploys cost money and can destroy data."*
+:::
+:::
+:::
+
+::: {.notes}
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 8:20]</span>
+
+This is the slide I'd most like you to remember.
+
+I did not open a chat window and ask for a stock dashboard. I wrote a specification first. Six hundred lines. Architecture, the data model, every API endpoint, the design system, how it deploys, and the order to build it in.
+
+Then a second document — the decision log. Three hundred and forty lines of "here is what we decided and here is why," so that nine sessions later the agent doesn't confidently rebuild something against a choice I'd already abandoned.
+
+And a third document describing how to actually run the phases.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
+
+That's just over a thousand lines of direction before any code existed.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE FIRST QUOTE ON THE RIGHT]</span>
+
+This is a note I wrote to myself, and it's the single most useful thing in the repository. "Do not paste one giant build-the-whole-thing prompt." Because if you do, you get a mountain of untested code that all fails at once, and you've lost the ability to tell which part is wrong.
+
+So I ran one phase per session. Seven sessions. Each one small enough that I could actually review what came back.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE SECOND QUOTE]</span>
+
+And the second one — the agent writes code, builds images and runs tests. I run the deploys. I run anything that touches the database volume. Because those cost money and can destroy data, and I wanted a human hand on that lever.
+
+<span style="color:#c1121f;font-weight:700">[EMPHASIZE THIS]</span>
+
+Here's what I want you to notice. That thousand lines of thinking is the part that did *not* get faster. And it's precisely the part that made everything after it fast.
+
+Let me show you the loop those documents drove.
+:::
+
+## The loop I actually ran
+
+[Seven phases · one agent session each · a human gate on every one]{.kicker}
 
 ```{mermaid}
 %%{init: {'theme':'base',
@@ -438,575 +671,484 @@ market. 250 ms is where it stops looking laggy and stops costing much.
   'clusterBkg':'rgba(26,32,40,0.3)','clusterBorder':'#2b3441',
   'edgeLabelBackground':'#0e1116'}}}%%
 flowchart LR
-%% Declared C, B, A on purpose: dagre stacks disconnected components in
-%% reverse, so this is what puts track A at the top of the slide.
-  subgraph C["C · CHAT TURN — proposes"]
-    direction LR
-    C1["Ask<br/>useChat · SSE"] --> C2["Tool loop<br/>chat.run_turn"]
-    C2 --> C3["Propose<br/>pending.propose"]
-    C3 --> GATE{"Confirm?<br/>user decides"}
-    GATE -->|"yes"| C4["Write<br/>/chat/confirm"]
-    GATE -->|"no · expires 5 min"| X["nothing written"]
-  end
+%% Five ranks, three lines of label per node. A longer LR chain renders as an
+%% unreadable strip; stacked LR subgraphs render too tall because mermaid
+%% ignores subgraph `direction` once the subgraph has external edges.
+  SPEC["<b>plan.md · CLAUDE.md · prompts.md</b><br/>1,064 lines<br/>authored before any code"]
+  BRIEF["<b>I brief one phase</b><br/>scope + constraints<br/>one phase per session"]
+  AGENT["Agent session<br/>implements + writes tests<br/>291 pytest · ruff · tsc · docker"]
+  REVIEW{"<b>I review<br/>the diff</b>"}
+  SHIP["<b>I run fly deploy</b><br/>never the agent<br/>then watch it in production"]
+  FIX["Targeted correction<br/>report first, fix second"]
 
-  subgraph B["B · PORTFOLIO — writes"]
-    direction LR
-    B1["Submit<br/>TransactionForm"] --> B2["Validate<br/>record_transaction"]
-    B2 --> B3["Append + lots<br/>FIFO · _replay"]
-    B3 --> B4["Recompute<br/>positions()"] --> B5["Render<br/>PositionsTable"]
-  end
+  SPEC --> BRIEF --> AGENT --> REVIEW
+  REVIEW -->|"matches the plan"| SHIP
+  REVIEW -. "deviates" .-> FIX
+  FIX -. "back round" .-> AGENT
+  SHIP -. "next phase" .-> BRIEF
+  SHIP -. "defect found" .-> FIX
 
-  subgraph A["A · LIVE PRICE — pushed"]
-    direction LR
-    A1["Trade print<br/>finnhub.stream"] --> A2["Cache + flag<br/>price_hub.record"]
-    A2 --> A3["Flush 250 ms<br/>price_hub.flush"]
-    A3 --> A4["Push tick<br/>routers/ws"] --> A5["Flip row<br/>TickerTape"]
-  end
-
-  classDef gold  fill:#2a2415,stroke:#c9a227,stroke-width:2.5px,color:#f5f2ec
-  classDef write fill:#16241f,stroke:#2f7d6e,stroke-width:2px,color:#f5f2ec
+  classDef spec  fill:#151a21,stroke:#3a424c,color:#8b929c
+  classDef human fill:#2a2415,stroke:#c9a227,stroke-width:2.5px,color:#f5f2ec
+  classDef agent fill:#1a2028,stroke:#39424e,color:#f5f2ec
   classDef gate  fill:#2a2415,stroke:#c9a227,stroke-width:3px,color:#f5f2ec
-  classDef dead  fill:#241614,stroke:#a8442f,color:#f5f2ec
-  class A1,A2,A3,A4,A5 gold
-  class B2,B3,C4 write
-  class GATE gate
-  class X dead
+  class SPEC spec
+  class BRIEF,SHIP human
+  class AGENT,FIX agent
+  class REVIEW gate
 ```
 
-::: {.cols style="margin-top:0.7em;font-size:0.44em;line-height:1.5"}
-::: {.fragment}
-[**A · never touches SQLite.**]{.brass} Hundreds in, ≤ 4/s out. Overwritten and forgotten.
+[Gold is me. **Not** prompt → AI → finished app. The loop is: intent → plan → generate → execute → inspect → correct → validate → ship.]{.caption}
+
+::: {.notes}
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:20 — TOTAL 9:40]</span>
+
+This is the actual workflow. Anything gold is me.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE THREE GREY BOXES ON THE LEFT]</span>
+
+It starts with those three documents on the left.
+
+<span style="color:#c1121f;font-weight:700">[MOVE ALONG THE CHAIN AS YOU DESCRIBE EACH STEP]</span>
+
+I brief one phase. Just one. The agent reads the plan and the decision log, implements that phase, and writes tests for it.
+
+Then the machine checks it — the test suite, the linter, the type checker, and a Docker build. That part is fully automated, and it's where the cheap mistakes get caught.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE GOLD DIAMOND]</span>
+
+Then this gate. I read the diff against the plan. And the instruction I gave was very specific — report first, don't fix. Because if you let it start editing the moment it finds something, you lose the chance to decide whether it actually found a real problem.
+
+If it deviates from the plan, it goes back round for a targeted correction. If it matches, I deploy it. Me — not the agent.
+
+Then I watch it in production, with a real market feed, and that feeds the next phase.
+
+<span style="color:#c1121f;font-weight:700">[SLOW DOWN — THIS IS THE KEY POINT OF THE TALK]</span>
+
+What I want you to take from this diagram is what it is *not*.
+
+It is not: write a prompt, get an application. There are four separate points on that loop where a human decision is required, and three of them are places where the thing could have gone wrong quietly.
+
+The pattern is: intent, plan, generate, execute, inspect, correct, validate, ship. That is just... engineering. The agent made one step of it dramatically faster.
+
+Let me show you where it went wrong, because that's more instructive than where it went right.
 :::
-::: {.fragment}
-[**B · the only ordinary write path.**]{.gain} Oversell is rejected *first*, in one transaction — a refusal leaves nothing behind.
+
+## Where my judgement was the bottleneck
+
+::: {.cols}
+::: {.card .fragment}
+[Caught by review]{.tag}[An unbounded cache]{.h4}
+
+A cache with no eviction. **Every one of the 291 tests passed.** Tests check behaviour, not resource growth — so a human had to read the code and notice.
 :::
-::: {.fragment}
-[**C · proposes.**]{.brass} The diamond is the only gate between a model proposal and a recorded trade.
+::: {.card .fragment}
+[Caught in production]{.tag}[A 403 the plan didn't predict]{.h4}
+
+The free data tier didn't include historical prices. Invisible until a real request came back refused. I resolved it by **splitting providers, not by paying** — the interface I'd designed made it a one-file change.
 :::
+:::
+
+::: {.cols style="margin-top:0.7em"}
+::: {.card .fragment}
+[Caught by arithmetic]{.tag}[My own spec was wrong]{.h4}
+
+The plan said poll every 15 seconds. The rate limit is 60 calls a minute — so that breaks above 15 symbols. **I had written the bug myself**, and had to catch it.
+:::
+::: {.card .fragment}
+[Caught by looking]{.tag}[Stale API knowledge]{.h4}
+
+I made the agent verify model IDs and tool versions **against the live API docs rather than from memory** — and three of the shapes in my own plan turned out to be out of date.
+:::
+:::
+
+::: {style="margin-top:0.9em;font-size:0.46em;color:#8b929c;max-width:44em"}
+Four defect channels — tests, review, production, and a real browser.
+**Three of the four only fire after the code is already deployed.**
 :::
 
 ::: {.notes}
-Three tracks, one set of services. They differ in what starts them and what
-they are allowed to touch. Green = writes. Gold = pushed or gated.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:15 — TOTAL 10:55]</span>
+
+Four real defects. I picked these because each one was caught by a different mechanism, and only one of them was caught by a machine.
+
+<span style="color:#c1121f;font-weight:700">[CLICK TO REVEAL THE FIRST CARD]</span>
+
+A code review found a cache that grew forever. No eviction. And every single one of the two hundred and ninety-one tests passed, because tests check that behaviour is correct — they don't check whether memory quietly grows until the machine falls over. A person had to read it and notice.
+
+<span style="color:#c1121f;font-weight:700">[CLICK TO REVEAL THE SECOND CARD]</span>
+
+Production found the second one. The free data plan I'd chosen didn't actually include historical prices. You cannot discover that locally. It only appears when a real request comes back refused.
+
+<span style="color:#c1121f;font-weight:700">[EMPHASIZE THE NEXT SENTENCE]</span>
+
+And here's the part I'm actually pleased about. I fixed it by adding a second provider behind the interface I'd designed in the spec — rather than paying to upgrade. That was a one-file change. It was cheap *because* of an architectural decision I'd made days earlier, before the problem existed.
+
+<span style="color:#c1121f;font-weight:700">[CLICK TO REVEAL THE THIRD CARD]</span>
+
+The third one is my favourite, because the bug was mine. My own specification said poll every fifteen seconds. But the rate limit is sixty calls a minute — so that breaks the moment you're watching more than fifteen symbols. The agent implemented what I asked for. What I asked for was wrong. I had to do the arithmetic and catch it.
+
+<span style="color:#c1121f;font-weight:700">[CLICK TO REVEAL THE FOURTH CARD]</span>
+
+And the fourth — I explicitly instructed the agent to check the current API documentation rather than rely on what it remembered. Three details in my own plan turned out to be stale.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
+
+Three of those four only surfaced after deployment. That's the honest shape of this kind of work. Generation got fast. Verification did not.
+
+Right. Let's do the number everyone's been waiting for.
 :::
 
-## Track B · Transactions are truth {.center}
+## Time {.center}
 
-[Figure · why no share count is stored]{.kicker}
+[Estimated before the build · measured after it]{.kicker}
 
 ```{python}
-#| label: fifo-lots
+#| label: time-comparison
 
-# Three buys, then one sell of 60 shares at $205.
-LOTS = [("Lot 1 · Jan 12", 40, 150.0), ("Lot 2 · Mar 04", 30, 172.0), ("Lot 3 · May 21", 30, 198.0)]
-SELL_QTY, SELL_PX = 60, 205.0
+K = HOURS_PER_DAY
 
-# FIFO: consume oldest lots first.
-remaining = SELL_QTY
-sold_f, held_f, realized_f = [], [], 0.0
-for _, qty, px in LOTS:
-    take = min(qty, remaining)
-    remaining -= take
-    sold_f.append(take)
-    held_f.append(qty - take)
-    realized_f += take * (SELL_PX - px)
+def series(unit):
+    """Values, +error, -error and bar labels, in days or hours."""
+    k = 1.0 if unit == "days" else K
+    vals = [PLAN_MID * k, ACTUAL_MID * k]
+    plus = [(PLAN_HI - PLAN_MID) * k, (ACTUAL_HI - ACTUAL_MID) * k]
+    minus = [(PLAN_MID - PLAN_LO) * k, (ACTUAL_MID - ACTUAL_LO) * k]
+    if unit == "days":
+        txt = [f"{PLAN_LO:.1f}–{PLAN_HI:.1f} days  ", f"{ACTUAL_LO:.1f}–{ACTUAL_HI:.1f} days  "]
+    else:
+        txt = [f"{PLAN_LO*K:.0f}–{PLAN_HI*K:.0f} h  ", f"{ACTUAL_LO_H:.0f}–{ACTUAL_HI_H:.0f} h  "]
+    return vals, plus, minus, txt
 
-total_qty  = sum(q for _, q, _ in LOTS)
-total_cost = sum(q * p for _, q, p in LOTS)
-avg_px     = total_cost / total_qty
-realized_a = SELL_QTY * (SELL_PX - avg_px)
+y = ["Estimated in the spec<br><sub>plan.md §10 · before any code</sub>",
+     "Actually spent<br><sub>reconstructed from 21 commits</sub>"]
+v, ep, em, txt = series("days")
 
-labels_f = [f"{n}<br>${p:,.0f}" for n, _, p in LOTS]
-labels_a = [f"Single blended position<br>${avg_px:,.2f}"]
+fig = go.Figure(go.Bar(
+    x=v, y=y, orientation="h",
+    marker=dict(color=[MUTED, BRASS], line=dict(color=PAPER, width=1)),
+    error_x=dict(type="data", symmetric=False, array=ep, arrayminus=em,
+                 color=INK, thickness=1.6, width=8),
+    # Labels sit *inside* the bars: outside, the long bar's label collided
+    # with the callout box.
+    text=txt, textposition="inside", insidetextanchor="start",
+    textfont=dict(family="IBM Plex Mono, monospace", size=15, color=PAPER),
+    hovertemplate="%{y}<br>%{x:.1f}<extra></extra>"))
 
-def banner(method, realized, sub):
-    colour = GAIN if realized >= 0 else LOSS
-    return [dict(
-        x=0.99, y=0.97, xref="paper", yref="paper",
-        xanchor="right", yanchor="top", showarrow=False, align="right",
-        font=dict(family="IBM Plex Mono, monospace", size=16, color=INK),
-        bgcolor="rgba(26,32,40,0.85)", bordercolor=colour, borderwidth=1, borderpad=9,
-        # Plotly's SVG text parser accepts <span style>, but not a style
-        # attribute on <b> — one of those blanks the whole annotation.
-        text=(f"{method} · realized P/L "
-              f"<span style='color:{colour};font-size:21px'><b>${realized:,.0f}</b></span>"
-              f"<br><span style='font-size:13px;color:{MUTED}'>{sub}</span>"),
-    )]
-
-fig = go.Figure()
-fig.add_trace(go.Bar(
-    x=labels_f, y=sold_f, name=f"sold @ ${SELL_PX:,.0f}",
-    marker=dict(color=BRASS, line=dict(color=PAPER, width=1)),
-    hovertemplate="sold %{y} shares<extra></extra>",
-))
-fig.add_trace(go.Bar(
-    x=labels_f, y=held_f, name="still held",
-    marker=dict(color=SLATE, line=dict(color="#39424e", width=1)),
-    hovertemplate="held %{y} shares<extra></extra>",
-))
-
-fig.update_layout(
-    height=505, autosize=True, barmode="stack", bargap=0.55,
-    yaxis=dict(title="shares", range=[0, 45]),
-    xaxis=dict(title=""),
-    annotations=banner("FIFO", realized_f, "40 @ $150 + 20 @ $172 consumed, oldest first"),
-    updatemenus=[menu_style(buttons=[
-        dict(label="  FIFO lots  ", method="update",
-             args=[{"x": [labels_f, labels_f], "y": [sold_f, held_f]},
-                   {"annotations": banner("FIFO", realized_f,
-                                          "40 @ $150 + 20 @ $172 consumed, oldest first")}]),
-        dict(label="  Average cost  ", method="update",
-             args=[{"x": [labels_a, labels_a], "y": [[SELL_QTY], [total_qty - SELL_QTY]]},
-                   {"annotations": banner("Average cost", realized_a,
-                                          "lot structure gone — and it cannot be recovered")}]),
-    ])],
-)
-show(fig)
-```
-
-::: {.cols style="margin-top:0.3em"}
-::: {}
-[Illustrative lots. Same three buys, same sale — **$`{python} f"{realized_f - realized_a:,.0f}"`** apart in realized P/L.]{.caption}
-:::
-::: {}
-[Positions, cost basis and P/L are **recomputed** from the log every time. The log is append-only; a correction is a new row.]{.caption}
-:::
-:::
-
-::: {.notes}
-Toggle to Average cost. The bars collapse into one — and that is the whole
-argument. Average cost destroys the lot structure, so the moment you sell part
-of a position you can never recover the real basis. Hence: store no share count.
-:::
-
-## Track C · The model proposes {.center}
-
-::: {.split}
-::: {}
-::: {.pull style="font-size:1.2em"}
-It can propose portfolio changes but cannot make them. Nothing is written until you click Confirm.
-:::
-
-::: {style="font-size:0.44em;line-height:1.5;color:#8b929c;margin-top:0.6em"}
-Enforced **structurally**, not by prompting. The tool dispatcher is handed a
-read-only `PortfolioReader`, not a connection —
-:::
-
-::: {.pull style="font-size:0.92em;border-left-color:#2f7d6e;margin-top:0.4em"}
-it cannot write, because it holds no object capable of writing.
-:::
-
-::: {.stages style="margin-top:0.5em"}
-::: {.stage}
-[C2]{.n}[Tool loop runs read-only, **≤ 6 turns** [services/chat.py · run_turn&#40;&#41;]{.m}]{.t}
-:::
-::: {.stage}
-[C3]{.n}[Proposal parked in memory, **expires in 5 min** [services/pending.py]{.m}]{.t}
-:::
-::: {.stage}
-[C4]{.n}[Confirm is **single-use** — a replay is a 410 [routers/chat.py · POST /api/chat/confirm]{.m}]{.t}
-:::
-:::
-
-::: {style="font-size:0.4em;color:#8b929c;margin-top:0.5em"}
-A test runs every tool and asserts the ledger is **byte-for-byte unchanged**.
-:::
-:::
-
-::: {style="padding-top:2.2em"}
-
-```{=html}
-<div class="confirm">
-  <div class="head">Proposed change · awaiting confirmation</div>
-  <div class="body">Buy 12 shares of NVDA<br>at $126.55</div>
-  <div class="meta">est. $1,518.60 · expires in 4:52<br>price filled from the live quote</div>
-  <div class="btns">
-    <span class="btn primary">Confirm</span>
-    <span class="btn">Dismiss</span>
-  </div>
-</div>
-```
-
-::: {style="font-size:0.4em;color:#8b929c;margin-top:1em;max-width:15em;line-height:1.5"}
-Not distrust of the model. *"Sell everything,"* typed at 2am, should meet a
-confirmation dialog like any other destructive action.
-:::
-:::
-:::
-
-::: {.notes}
-The capability argument is the one worth stealing. Not "we told the model not
-to write" — the object graph makes writing unrepresentable.
-:::
-
-## Degrade honestly, never guess {.center}
-
-[Figure · value over time, reconstructed from the log]{.kicker}
-
-```{python}
-#| label: value-over-time
-
-days  = pd.date_range("2025-07-01", "2026-09-05", freq="B")
-n     = len(days)
-
-# Cost basis: a step function that moves only when a transaction is recorded.
-buys = {0: 12000, 46: 5200, 120: 7400, 205: 4100, 268: 6300}
-cost = np.zeros(n)
-running = 0.0
-for i in range(n):
-    running += buys.get(i, 0)
-    cost[i] = running
-
-# Market value: the basis, plus a return path that drifts and drawdowns.
-shock = np.zeros(n)
-shock[150:185] = np.linspace(0, -0.16, 35)
-shock[185:230] = -0.16 + np.linspace(0, 0.19, 45)
-ret   = np.cumsum(rng.normal(0.00075, 0.0092, n)) + shock
-value = cost * (1 + ret)
-
-# The point of the slide: an unpriceable window is a gap, never a zero.
-GAP0, GAP1 = 243, 254
-value_gapped = value.copy()
-value_gapped[GAP0:GAP1] = np.nan
-
-fig = go.Figure()
-fig.add_trace(go.Scatter(
-    x=days, y=cost, mode="lines", name="cost basis",
-    line=dict(color=MUTED, width=1.6, shape="hv", dash="dot"),
-    hovertemplate="cost basis $%{y:,.0f}<extra></extra>",
-))
-fig.add_trace(go.Scatter(
-    x=days, y=value_gapped, mode="lines", name="market value",
-    line=dict(color=BRASS, width=2.4), connectgaps=False,
-    fill="tozeroy", fillcolor="rgba(201,162,39,0.10)",
-    hovertemplate="value $%{y:,.0f}<extra></extra>",
-))
-
-fig.add_vrect(
-    x0=days[GAP0], x1=days[GAP1 - 1],
-    fillcolor="rgba(168,68,47,0.20)", line_width=0, layer="below",
-)
-# Label the band by hand: add_vrect's own annotation anchors to the band edge
-# and runs off the right of the plot.
 fig.add_annotation(
-    x=days[(GAP0 + GAP1) // 2], y=1.0, yref="paper",
-    xanchor="right", yanchor="bottom", showarrow=False,
-    text="provider down — symbols named, value null",
-    font=dict(family="IBM Plex Mono, monospace", size=13, color=LOSS),
-)
+    x=0.995, y=0.04, xref="paper", yref="paper", xanchor="right", yanchor="bottom",
+    showarrow=False, align="right",
+    font=dict(family="IBM Plex Mono, monospace", size=15, color=INK),
+    bgcolor="rgba(26,32,40,0.92)", bordercolor=BRASS, borderwidth=1, borderpad=12,
+    text=(f"<span style='font-size:32px;color:{BRASS}'><b>≈{SPEEDUP_MID:.0f}× faster</b></span>"
+          f"<br><b>{REDUCTION*100:.0f}% less time</b>"
+          f"<br><span style='font-size:13px;color:{MUTED}'>"
+          f"range {SPEEDUP_LO:.0f}× – {SPEEDUP_HI:.0f}× depending on which<br>"
+          f"end of each estimate you take</span>"))
+
+def restyle(unit, xmax, title):
+    vals, plus, minus, labels = series(unit)
+    return dict(label=f"  {unit}  ", method="update", args=[
+        {"x": [vals], "text": [labels],
+         "error_x": [dict(type="data", symmetric=False, array=plus,
+                          arrayminus=minus, color=INK, thickness=1.6, width=8)]},
+        {"xaxis.title.text": title, "xaxis.range": [0, xmax]}])
 
 fig.update_layout(
-    height=515, autosize=True,
-    yaxis=dict(title="", tickprefix="$", separatethousands=True),
-    xaxis=dict(
-        rangeslider=dict(visible=False),
-        rangeselector=dict(
-            buttons=[
-                dict(count=1,  label="1M", step="month", stepmode="backward"),
-                dict(count=3,  label="3M", step="month", stepmode="backward"),
-                dict(count=6,  label="6M", step="month", stepmode="backward"),
-                dict(count=1,  label="1Y", step="year",  stepmode="backward"),
-                dict(label="ALL", step="all"),
-            ],
-            bgcolor=SLATE, activecolor=BRASS, bordercolor=GRID, borderwidth=1,
-            font=dict(family="IBM Plex Mono, monospace", size=12, color=INK),
-            x=0, y=1.12,
-        ),
-    ),
-)
+    height=420, autosize=True, bargap=0.5, showlegend=False,
+    xaxis=dict(title="developer-days", range=[0, 13]),
+    yaxis=dict(autorange="reversed",
+               tickfont=dict(family="Instrument Sans", size=15, color=INK)),
+    margin=dict(l=310, r=40, t=30, b=52),
+    updatemenus=[menu_style(buttons=[
+        restyle("days", 13, "developer-days"),
+        restyle("hours", 104, "hours")])])
 show(fig)
 ```
 
 ::: {.cols}
 ::: {}
-[Illustrative series. Replayed forwards from the whole transaction log, valuing holdings at each day's close — `services/performance.py`.]{.caption}
+[**The estimate** is from the spec, written before any code and never revised. **The measurement** caps gaps between consecutive commits at 45 minutes and adds 30 minutes of lead-in per session.]{.caption}
 :::
 ::: {}
-[**The gap is the feature.** A price that is unavailable renders as an em dash, not a zero. A symbol with no history is named, never zero-filled.]{.caption}
+[Aug 29 · scaffold + Phase 0 &nbsp;·&nbsp; Aug 30 · Phases 1–2 &nbsp;·&nbsp; Aug 31 · Phases 3–6 in one morning &nbsp;·&nbsp; Sep 6 · watchlist + the guide]{.caption}
 :::
 :::
 
 ::: {.notes}
-Range buttons mirror the app's own. The red band is a dead provider: the line
-stops rather than dropping to zero, because a zero would be a lie that looks
-like a crash.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:35 — TOTAL 12:30]</span>
+
+<span style="color:#c1121f;font-weight:700">[SLOW DOWN. THIS IS THE CENTREPIECE SLIDE.]</span>
+
+So. The grey bar is what the spec said. Eight and a half to eleven and a half developer-days. Written before any code existed.
+
+The gold bar is what it actually took.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE — LET THEM READ THE GAP]</span>
+
+Somewhere between nine and sixteen hours of hands-on time. Call it two working days.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE BOX IN THE TOP RIGHT. EMPHASIZE "SIX TIMES FASTER".]</span>
+
+That's about six times faster. Roughly eighty-four percent less time.
+
+Now, I want to be careful here, because this is exactly the kind of number people inflate.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE ERROR BARS ON BOTH ENDS]</span>
+
+Both of those bars are ranges, and I've drawn the uncertainty. Depending on which end of each range you take, the honest answer is somewhere between four times and ten times. Six is the midpoint. I'd rather give you a range I can defend than a single number I can't.
+
+<span style="color:#c1121f;font-weight:700">[CLICK THE "HOURS" BUTTON]</span>
+
+Here it is in hours, if that's easier to hold — roughly eighty hours of estimated work against something like twelve.
+
+<span style="color:#c1121f;font-weight:700">[CLICK BACK TO "DEVELOPER-DAYS"]</span>
+
+And how did I measure the actual side? I reconstructed it from commit timestamps. When there's a gap of more than forty-five minutes between commits, I assume I went and did something else, and I don't count it. Then I add half an hour before each session for the thinking that doesn't show up as a commit. That's the conservative method. The generous method just takes the first and last commit of each day.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE TIMELINE ALONG THE BOTTOM]</span>
+
+The thing I still find slightly startling is the third of those. On the thirty-first of August, between about eight in the morning and one in the afternoon, phases three, four, five and six all landed. The spec said that block was six to eight days of work.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
+
+Time is the headline. But cost is the number that changes what an organisation can afford to try.
 :::
 
-## Four rented services
-
-[What each is for — and what happens without it]{.kicker}
-
-::: {.cols style="margin-top:0.5em"}
-::: {.card .fragment}
-[Free tier]{.tag}[Finnhub — the price feed]{.h4}
-
-Live prices and symbol search over one permanently open connection. **The only free service offering genuinely real-time US prices over a push connection.**
-
-[**Without it** — no live prices. Cost basis and realized P/L are unaffected: they come from your own ledger.]{.without}
-:::
-
-::: {.card .fragment}
-[800 req/day]{.tag}[Twelve Data — the history]{.h4}
-
-Daily closes behind both charts. Exists purely to fill Finnhub's gap: history is a paid feature there, discovered only after deploying.
-
-[**Without it** — both charts return a 502 that names the fix. Everything else is unaffected.]{.without}
-:::
-:::
-
-::: {.cols style="margin-top:0.6em"}
-::: {.card .fragment}
-[Pay per use]{.tag}[Anthropic — the analyst]{.h4}
-
-Reads holdings, checks prices, reads history, searches the web, answers in plain language. **Proposes; never writes.**
-
-[**Without it** — the chat panel returns 503. The dashboard works normally.]{.without}
-:::
-
-::: {.card .fragment}
-[~$3 / month]{.tag}[Fly.io — where it runs]{.h4}
-
-One always-on machine, public HTTPS, and a volume that survives restarts. **Hosts that sleep would kill the market socket every time you looked away.**
-
-[**Without it** — the app runs on a laptop, reachable only by you, only while it is awake.]{.without}
-:::
-:::
-
-::: {.notes}
-The "without it" line is the honest part of a dependency slide. Three of the
-four degrade to a named error; only Fly is load-bearing, and that is hosting,
-not a component.
-:::
-
-## Five constraints
-
-[Decisions that shaped everything else]{.kicker}
-
-::: {.stages}
-::: {.stage}
-[01]{.n}[**Exactly one machine — for correctness, not cost.** [Two copies would open two sockets to a feed that allows one, and double-mount a volume that cannot be. The config pins it explicitly rather than relying on a default.]{.m}]{.t}
-:::
-::: {.stage}
-[02]{.n}[**The transaction log is the only source of truth.** [Holdings, average cost and P/L are recomputed every time. There is deliberately no stored share count.]{.m}]{.t}
-:::
-::: {.stage}
-[03]{.n}[**The model proposes; the person disposes.** [The dispatcher receives a narrow read-only reader, never a connection.]{.m}]{.t}
-:::
-::: {.stage}
-[04]{.n}[**It reports; it never advises.** [No recommendations, price targets or predictions. Asked whether to sell, it declines and offers data.]{.m}]{.t}
-:::
-::: {.stage}
-[05]{.n}[**Degrade honestly, never guess.** [Unavailable prices render as an em dash. Stale quotes are labelled with their age. A dead provider names the symbols it could not price.]{.m}]{.t}
-:::
-:::
-
-::: {.notes}
-If you remember one line from this deck, make it 02. Everything structural
-downstream — the FIFO engine, the replay, the refusal to cache positions —
-is a consequence of it.
-:::
-
-## Figure 3 · How it was built {.center}
-
-[A spec-driven loop with four feedback channels]{.kicker}
-
-```{mermaid}
-%%{init: {'theme':'base',
-  'fontFamily':'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
-  'flowchart':{'htmlLabels':true,'useMaxWidth':true,'curve':'basis','nodeSpacing':22,'rankSpacing':32},
-  'themeVariables':{
-  'background':'#0e1116','primaryColor':'#1a2028','primaryTextColor':'#f5f2ec',
-  'primaryBorderColor':'#232a33','lineColor':'#5c6672','fontSize':'13px',
-  'clusterBkg':'rgba(26,32,40,0.3)','clusterBorder':'#2b3441',
-  'edgeLabelBackground':'#0e1116'}}}%%
-flowchart LR
-  subgraph SPEC["AUTHORED BEFORE THE CODE"]
-    direction TB
-    P1["plan.md<br/>§1–§14 spec"]
-    P2["prompts.md<br/>per-phase asks"]
-    P3["CLAUDE.md<br/>durable decisions"]
-  end
-
-  S1["1 · Read the<br/>phase spec"]
-  S2["2 · Inspect repo<br/>verify externals"]
-  S3["3 · Implement<br/>backend · frontend · tests"]
-  S4["4 · Verify locally<br/>291 pytest · ruff · tsc"]
-  G{"All<br/>green?"}
-  S5["5 · Ship<br/>Actions → flyctl"]
-  S6["6 · Observe in production<br/>live feed · real market hours"]
-
-  SPEC --> S1 --> S2 --> S3 --> S4 --> G
-  G -. "no" .-> S3
-  G -->|"yes"| S5 --> S6
-  S6 -. "next phase" .-> S1
-
-  classDef spec fill:#151a21,stroke:#3a424c,color:#8b929c
-  classDef step fill:#1a2028,stroke:#39424e,color:#f5f2ec
-  classDef gate fill:#2a2415,stroke:#c9a227,stroke-width:2.5px,color:#f5f2ec
-  class P1,P2,P3 spec
-  class S1,S2,S3,S4,S5,S6 step
-  class G gate
-```
-
-::: {style="font-size:0.46em;line-height:1.55;color:#8b929c;max-width:44em;margin-top:0.5em"}
-Written by an AI agent — Claude Code, running Claude Opus 5 — against a
-specification authored **before any code existed**. There is no autonomous
-task-runner here: each phase was a deliberate, human-initiated cycle.
-`CLAUDE.md` is read before each phase and **written back when a decision changes**.
-:::
-
-::: {.notes}
-Six steps, one gate, two loops back. The spec was written first and is still
-the thing each phase is read from.
-:::
-
-## How defects surfaced
-
-[Four channels — three of which only fire after deploy]{.kicker}
-
-::: {.stat-grid .cols-4}
-::: {.stat .fragment}
-[Channel 1]{.label}[Test suite]{.value}[At stage 4, before anything ships. Catches what can be checked in isolation.]{.note}
-:::
-::: {.stat .fragment}
-[Channel 2]{.label}[Code review]{.value}[Found an unbounded cache that every one of the 291 tests passed.]{.note}
-:::
-::: {.stat .fragment}
-[Channel 3]{.label}[Production]{.value}[A status update written but never called — invisible until a real market opened.]{.note}
-:::
-::: {.stat .fragment}
-[Channel 4]{.label}[Screenshots]{.value}[The real browser. A chart dying on a CSS colour token.]{.note}
-:::
-:::
-
-::: {.pull style="margin-top:1.1em"}
-Three of the four only fire after deploy.
-:::
-
-::: {style="font-size:0.44em;line-height:1.5;color:#8b929c;margin-top:0.6em;max-width:40em"}
-Each produced a fix commit, and the git history **interleaves them with the
-phase commits** rather than hiding them.
-:::
-
-::: {.notes}
-This is the slide that justifies calling it a loop rather than a pipeline. A
-test suite alone would have caught exactly one of these four.
-:::
-
-## Operations {.center}
-
-[What it costs, and what keeps it alive]{.kicker}
+## Cost {.center}
 
 ::: {.split}
 ::: {}
 ```{python}
-#| label: cost-breakdown
+#| label: cost
 
-items = ["Fly.io machine", "Anthropic", "Fly.io volume", "Twelve Data", "Finnhub"]
-mid   = [3.00, 3.00, 0.15, 0.0, 0.0]   # machine is $2–4; chat is per-message
-what  = ["Always-on server, public address, HTTPS",
-         "Chat, billed per message",
-         "1 GB disk the ledger survives on",
-         "Price history, 800 requests/day",
-         "Live prices, 60 requests/min"]
+RATES = [400, 600, 800]
+def cost_bars(rate):
+    return [PLAN_LO * rate, PLAN_MID * rate, PLAN_HI * rate]
 
-colours = [BRASS if v > 0 else GAIN for v in mid]
+labels = ["Low estimate<br><sub>8.5 days</sub>",
+          "Midpoint<br><sub>10 days</sub>",
+          "High estimate<br><sub>11.5 days</sub>"]
 
 fig = go.Figure(go.Bar(
-    x=mid, y=items, orientation="h",
-    marker=dict(color=colours, line=dict(color=PAPER, width=1)),
-    customdata=what,
-    hovertemplate="<b>%{y}</b><br>%{customdata}<br>$%{x:.2f}/mo<extra></extra>",
-    text=["  $2–4", "  a few $", "  $0.15", "  free", "  free"],
-    textposition="outside", cliponaxis=False,
+    x=labels, y=cost_bars(RATES[1]),
+    marker=dict(color=MUTED, line=dict(color=PAPER, width=1)),
+    text=[f"${v:,.0f}" for v in cost_bars(RATES[1])], textposition="outside",
+    cliponaxis=False,
     textfont=dict(family="IBM Plex Mono, monospace", size=15, color=INK),
-))
+    hovertemplate="%{x}<br>$%{y:,.0f}<extra></extra>"))
 
 fig.update_layout(
-    height=410, autosize=True, bargap=0.42, showlegend=False,
-    xaxis=dict(title="per month", tickprefix="$", range=[0, 6]),
-    yaxis=dict(autorange="reversed",
-               tickfont=dict(family="IBM Plex Mono, monospace", size=14, color=INK)),
-    margin=dict(l=160, r=90, t=20, b=52),
-)
+    height=380, autosize=True, bargap=0.5, showlegend=False,
+    yaxis=dict(title="engineering cost", tickprefix="$", range=[0, 10500]),
+    xaxis=dict(tickfont=dict(family="Instrument Sans", size=13, color=INK)),
+    margin=dict(l=90, r=30, t=60, b=60),
+    updatemenus=[menu_style(active=1, buttons=[
+        dict(label=f"  ${r}/day  ", method="update",
+             args=[{"y": [cost_bars(r)],
+                    "text": [[f"${v:,.0f}" for v in cost_bars(r)]]}])
+        for r in RATES])])
 show(fig)
 ```
 
-[Typical total: **under $10/month.** Machine and volume are real prices; the Anthropic line is per-message and depends on use.]{.caption}
+[Traditional side only. **Pick your own loaded day-rate** — the point is the order of magnitude, not the exact figure.]{.caption}
 :::
 
 ::: {}
+[What it actually cost me]{.kicker}
+
 ::: {.card}
-[Boot]{.tag}[Migrations run at boot, idempotently]{.h4}
+[Verified]{.tag}[Hosting · ~$3 / month]{.h4}
 
-Never as a release command — **that machine runs with no volume attached**, and the work would vanish.
+One always-on machine and a 1 GB volume on Fly.io. This is a real invoice, not an estimate.
 :::
 
-::: {.card style="margin-top:0.7em"}
-[Nightly]{.tag}[Snapshot via SQLite online backup]{.h4}
+::: {.card style="margin-top:0.6em"}
+[Verified]{.tag}[Market data · $0]{.h4}
 
-Not a file copy. With write-ahead logging, copying the database without its journal yields a **torn file that looks fine until you need it**.
+Two free tiers, deliberately chosen. When one refused to serve history, I added a second provider rather than upgrade.
 :::
 
-::: {.card style="margin-top:0.7em"}
-[Always]{.tag}[Deploy on every push]{.h4}
+::: {.card style="margin-top:0.6em"}
+[Tooling]{.tag}[One month of a Claude subscription]{.h4}
 
-GitHub Actions → flyctl. Structured JSON logs.
+A flat monthly fee — the same one I would be paying regardless of this project. The **marginal** cost of building Ticker was effectively the hosting.
+:::
+:::
+:::
+
+::: {.notes}
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 13:30]</span>
+
+<span style="color:#c1121f;font-weight:700">[BEFORE PRESENTING: CHECK YOUR ACTUAL CLAUDE SUBSCRIPTION TIER SO YOU CAN SAY THE NUMBER IF SOMEONE ASKS.]</span>
+
+Cost. I'll be careful here too, because I don't know your loaded day rate and I'm not going to pretend I do.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE CHART]</span>
+
+So this chart just takes the spec's own estimate and multiplies it by a rate. At six hundred a day, ten developer-days is about six thousand dollars of engineering.
+
+<span style="color:#c1121f;font-weight:700">[CLICK THROUGH THE RATE BUTTONS: $400, THEN $800, THEN BACK TO $600]</span>
+
+You can slide that to whatever number is realistic for you. The point isn't the exact figure — it's the order of magnitude. This is several thousand dollars of engineering effort, and probably several people's calendars.
+
+<span style="color:#c1121f;font-weight:700">[TURN TO THE RIGHT-HAND SIDE]</span>
+
+Against that, here's what it actually cost me.
+
+Three dollars a month to host. That's a real invoice.
+
+Zero for market data — two free tiers. And when one of them refused to give me historical prices, I added a second provider instead of upgrading. That decision was worth more than it sounds; it kept the running cost at zero.
+
+And one month of a Claude subscription — which is a flat fee I'm paying anyway.
+
+<span style="color:#c1121f;font-weight:700">[EMPHASIZE THIS]</span>
+
+So the marginal cost of building this thing was, honestly, about three dollars a month.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
+
+And that's the part I think matters most for us as an organisation. It's not that engineering got cheaper. It's that the cost of *trying something* collapsed. An idea that isn't worth two weeks of a team's time might well be worth an afternoon.
+
+One more thing, and it's a slightly recursive one.
+:::
+
+## This presentation was built the same way
+
+[The same loop, pointed at the project itself]{.kicker}
+
+```{mermaid}
+%%{init: {'theme':'base',
+  'fontFamily':'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
+  'flowchart':{'htmlLabels':true,'useMaxWidth':true,'curve':'basis','nodeSpacing':20,'rankSpacing':38},
+  'themeVariables':{
+  'background':'#0e1116','primaryColor':'#1a2028','primaryTextColor':'#f5f2ec',
+  'primaryBorderColor':'#232a33','lineColor':'#5c6672','fontSize':'13px',
+  'edgeLabelBackground':'#0e1116'}}}%%
+flowchart LR
+  A["Agent reads<br/>the repository"]
+  B["21 commits<br/>timestamps → hours"]
+  C["plan.md §10<br/>→ the estimate"]
+  D["Charts + diagrams<br/>generated as code"]
+  E{"<b>I check every<br/>number</b>"}
+  F["<b>I set the narrative</b><br/>and rewrite the script"]
+  G["Published<br/>reveal.js · GitHub Pages"]
+
+  A --> B --> D
+  A --> C --> D
+  D --> E
+  E -. "wrong or unsupported" .-> A
+  E -->|"defensible"| F --> G
+
+  classDef agent fill:#1a2028,stroke:#39424e,color:#f5f2ec
+  classDef human fill:#2a2415,stroke:#c9a227,stroke-width:2.5px,color:#f5f2ec
+  classDef gate  fill:#2a2415,stroke:#c9a227,stroke-width:3px,color:#f5f2ec
+  class A,B,C,D,G agent
+  class F human
+  class E gate
+```
+
+::: {.cols style="margin-top:0.5em"}
+::: {}
+[Every chart on the slides you have just seen is **generated from the repository**, not drawn by hand — so if the numbers changed, the slides would change with them.]{.caption}
+:::
+::: {}
+[Built in **about half a day**. The same gate applies: I rejected the numbers I could not trace back to evidence.]{.caption}
+:::
+:::
+
+::: {.notes}
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 14:15]</span>
+
+I used the same approach to build this presentation.
+
+<span style="color:#c1121f;font-weight:700">[TRACE THE DIAGRAM LEFT TO RIGHT]</span>
+
+I pointed an agent at the repository. It read the commit history and turned the timestamps into hours. It pulled the estimates out of the specification. And then it generated these charts — as code, from that data.
+
+<span style="color:#c1121f;font-weight:700">[POINT AT THE GOLD DIAMOND]</span>
+
+Same gate as before. I checked every number, and I threw out the ones that couldn't be traced back to something in the repository. There was a first draft of the cost slide with a made-up salary figure in it. That's gone — which is why you saw a rate you can change instead.
+
+<span style="color:#c1121f;font-weight:700">[EMPHASIZE THIS]</span>
+
+And that's worth saying plainly: every chart you've seen is generated from the repo, not drawn by hand. If I fixed a bug tomorrow and committed it, the time chart would redraw itself.
+
+The whole deck took about half a day.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
+
+So — what do I actually take away from all of this?
+:::
+
+## What actually changed {.center}
+
+::: {.split}
+::: {}
+::: {.pull}
+The advantage isn't generating code faster. It's shortening the distance between an idea and a working solution.
+:::
+
+::: {style="margin-top:1em;font-size:0.5em;line-height:1.65;color:#8b929c"}
+AI did not replace the engineering process here. **It compressed one step of it.**
+
+Specification, architecture, verification and the decision to ship stayed
+exactly where they were — and became the constraint.
+:::
+:::
+
+::: {}
+::: {.cols style="gap:0.7em"}
+::: {}
+::: {.stat style="border-top-color:#2f7d6e"}
+[Compressed]{.label}[Implementation]{.value}[Typing, boilerplate, wiring, test scaffolding, the first draft of everything.]{.note}
+:::
+:::
+::: {}
+::: {.stat}
+[Did not compress]{.label}[Judgement]{.value}[Knowing the problem existed. Choosing the architecture. Deciding it was right.]{.note}
+:::
+:::
+:::
+
+::: {style="margin-top:0.9em;font-size:0.44em;line-height:1.6;color:#8b929c"}
+Directing, verifying and orchestrating this well is turning into an
+engineering skill of its own — and the people who develop it will simply
+operate across a much wider surface than before.
 :::
 :::
 :::
 
 ::: {.notes}
-Two operational details that are easy to get wrong and expensive to discover:
-migrations at boot rather than as a release step, and online backup rather than
-`cp`. Both are WAL consequences.
-:::
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 15:00]</span>
 
-## Status · what is built
+Here's what I take from it.
 
-[Six areas, all shipped]{.kicker}
+<span style="color:#c1121f;font-weight:700">[POINT AT THE TWO TILES ON THE RIGHT]</span>
 
-::: {.stat-grid .cols-3}
-::: {.stat}
-[Market data]{.label}[Live + historical]{.value}[Streaming prices with honest staleness labels; daily bars behind both charts.]{.note}
-:::
-::: {.stat}
-[Portfolio]{.label}[FIFO ledger]{.value}[Positions, cost basis, realized and unrealized P/L, allocation, value over time.]{.note}
-:::
-::: {.stat}
-[Analyst]{.label}[Tools + confirm]{.value}[Reads holdings and the web; proposes changes you approve.]{.note}
-:::
-::: {.stat}
-[Watchlist]{.label}[Editable tape]{.value}[Add or remove tracked symbols; validated against the feed before saving.]{.note}
-:::
-::: {.stat}
-[Security]{.label}[Passphrase + limits]{.value}[HttpOnly session cookie, rate-limited login, socket behind the same gate.]{.note}
-:::
-::: {.stat}
-[Operations]{.label}[CI + backups]{.value}[Deploy on every push, structured JSON logs, nightly database snapshot.]{.note}
-:::
-:::
+One step of the process compressed enormously. Implementation. The typing, the boilerplate, the wiring, the first draft of everything. That went roughly six times faster.
 
-::: {.notes}
-Quick sweep — then straight to the live app.
-:::
+Everything around it didn't compress at all. Knowing the coalescing problem existed. Choosing to put an interface in front of the data providers. Catching that my own polling maths was wrong. Deciding the thing was actually ready to ship.
 
-##  {#live-demo background-iframe="https://ticker-dash.fly.dev/" background-interactive="true"}
+<span style="color:#c1121f;font-weight:700">[SLOW DOWN]</span>
 
-[Live · ticker-dash.fly.dev]{.demo-badge}
+And once implementation stops being the bottleneck, that judgement becomes the bottleneck. Which I think is the genuinely useful finding here. The skill that matters is shifting — from writing every line yourself, to knowing what to ask for, and being able to tell whether what came back is right.
 
-::: {.demo-overlay}
-[If the frame is blank, the session cookie was blocked]{.hint}
-[Open live demo ↗](https://ticker-dash.fly.dev/){target="_blank" rel="noopener"}
-:::
+<span style="color:#c1121f;font-weight:700">[PAUSE. READ THE PULL QUOTE ON THE LEFT SLOWLY.]</span>
 
-::: {.notes}
-The real thing. Show: the tape flipping one row at a time; a position with its
-FIFO cost basis; then ask the analyst to add shares and let the confirm card
-appear — and *decline* it, to make the point that nothing was written.
+So if you take one sentence away, make it this one.
 
-If the iframe shows only the gate: hit the gold button, demo in a real tab, then
-come back. Press → for the annotated backup.
+The advantage isn't generating code faster. It's shortening the distance between an idea and a working solution.
+
+Two days, three dollars a month, and a thing that actually runs.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE — 2 SECONDS]</span>
+
+Thank you. I'm very happy to take questions — and the app is still open if anyone wants to poke at it.
+
+<span style="color:#c1121f;font-weight:700">[IF ASKED "COULD I DO THIS?": THE HONEST ANSWER IS THAT THE SPEC WAS THE HARD PART, AND WRITING A GOOD SPEC IS A NORMAL ENGINEERING SKILL.]</span>
+
+<span style="color:#c1121f;font-weight:700">[IF ASKED ABOUT CODE QUALITY: 291 TESTS, A LINTER, A TYPE CHECKER, AND A REVIEW GATE ON EVERY PHASE — AND POINT AT THE CACHE BUG THAT REVIEW CAUGHT.]</span>
 :::
 
 ##  {#demo-backup visibility="uncounted"}
@@ -1015,39 +1157,16 @@ come back. Press → for the annotated backup.
 
 ![](figs/dashboard.png){.shot fig-alt="The Ticker dashboard: a seven-symbol ticker tape, portfolio summary tiles, an empty positions table, the AAPL price chart, and the analyst panel mid-answer."}
 
-[Captured out of hours — the tape reads **CLOSED** and unrealized P/L renders as **—**, not a zero, which is the *degrade honestly* rule doing its job.]{.caption}
+[Captured out of hours — the tape reads **CLOSED** and unrealised P/L renders as **—**, not a zero.]{.caption}
 
 ::: {.notes}
-Uncounted slide. Only reach for it if the live app is unreachable.
+<span style="color:#c1121f;font-weight:700">[UNCOUNTED SLIDE — ONLY USE THIS IF THE LIVE APP WILL NOT LOAD.]</span>
 
-Talk to what is on screen: the tape across the top, the four summary tiles,
-and the analyst panel on the right answering in plain language with a
-disclaimer under it. The em dash in unrealized P/L is the honest-degradation
-rule from the constraints slide, visible in the product.
-:::
+This is the dashboard. Across the top is the ticker tape — seven symbols, updating independently when the market is open.
 
-## Not investment advice {.center}
+The four tiles are the portfolio summary. On the right is the analyst panel, mid-answer, with a disclaimer underneath it.
 
-::: {style="max-width:24em"}
-::: {.pull}
-This system reports data and answers questions about it.
-:::
+<span style="color:#c1121f;font-weight:700">[POINT AT THE EM DASH IN UNREALISED P/L]</span>
 
-::: {style="font-size:0.55em;line-height:1.6;color:#8b929c;margin-top:0.9em"}
-Prices may be delayed. Nothing in it is a recommendation to buy or sell
-anything — and it is built so that **it cannot become one**.
-:::
-
-::: {style="border-top:1px solid #232a33;margin-top:1.6em;padding-top:1.1em;font-family:'IBM Plex Mono',monospace;font-size:0.4em;letter-spacing:0.16em;text-transform:uppercase;color:#c9a227"}
-Ticker · One machine · Three rented services · 291 tests
-:::
-
-::: {style="font-family:'IBM Plex Mono',monospace;font-size:0.36em;letter-spacing:0.1em;color:#8b929c;margin-top:0.6em"}
-[ticker-dash.fly.dev](https://ticker-dash.fly.dev/){target="_blank"}
-:::
-:::
-
-::: {.notes}
-Close on the last clause: built so that it cannot become one. That is the
-structural claim the whole talk has been making.
+And that dash is the honest-degradation rule I mentioned — an unavailable number renders as a dash, never as a zero.
 :::
