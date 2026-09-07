@@ -406,7 +406,7 @@ for ms in (100, 250, 1000):
     ))
 
 fig.update_layout(
-    height=520, autosize=True,
+    height=560, autosize=True,
     annotations=note(250, len(x250)),
     xaxis=dict(title="seconds", range=[0, DURATION]),
     yaxis=dict(title="price", tickprefix="$"),
@@ -546,7 +546,7 @@ fig.add_trace(go.Bar(
 ))
 
 fig.update_layout(
-    height=470, autosize=True, barmode="stack", bargap=0.55,
+    height=505, autosize=True, barmode="stack", bargap=0.55,
     yaxis=dict(title="shares", range=[0, 45]),
     xaxis=dict(title=""),
     annotations=banner("FIFO", realized_f, "40 @ $150 + 20 @ $172 consumed, oldest first"),
@@ -696,7 +696,7 @@ fig.add_annotation(
 )
 
 fig.update_layout(
-    height=480, autosize=True,
+    height=515, autosize=True,
     yaxis=dict(title="", tickprefix="$", separatethousands=True),
     xaxis=dict(
         rangeslider=dict(visible=False),
@@ -923,7 +923,7 @@ fig = go.Figure(go.Bar(
 ))
 
 fig.update_layout(
-    height=380, autosize=True, bargap=0.42, showlegend=False,
+    height=410, autosize=True, bargap=0.42, showlegend=False,
     xaxis=dict(title="per month", tickprefix="$", range=[0, 6]),
     yaxis=dict(autorange="reversed",
                tickfont=dict(family="IBM Plex Mono, monospace", size=14, color=INK)),
