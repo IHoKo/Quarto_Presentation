@@ -1,0 +1,64 @@
+name: Publish deck to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    # Skip rebuilds for changes that cannot affect the rendered deck.
+    paths-ignore:
+      - 'PLAN.md'
+      - '**/*.pdf'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it half-way.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Render deck
+        run: quarto render ticker.qmd
+
+      - name: Assemble site
+        # ticker.html references ticker_files/ and libs/ relatively, so all
+        # three have to sit together. Pages serves index.html at the root.
+        run: |
+          mkdir -p _site
+          cp ticker.html _site/index.html
+          cp -r ticker_files _site/
+          cp -r libs _site/
+          test -s _site/index.html
+          test -s _site/libs/plotly.min.js
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

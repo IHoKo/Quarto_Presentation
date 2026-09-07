@@ -40,6 +40,23 @@ python3 export-pdf.py ticker.html ticker.pdf
 | `dist/ticker.html` | One 12 MB file — email it, or drop it on any static host. No chalkboard (the plugin cannot be embedded). |
 | `ticker.pdf` | Flat backup, 16:9, one page per slide. No interactivity. |
 
+## Sharing a link (GitHub Pages)
+
+`.github/workflows/publish.yml` renders the deck on every push to `main` and
+publishes it to GitHub Pages, so the link is always the current slides:
+
+    https://ihoko.github.io/Quarto_Presentation/
+
+One-time setup: **Settings -> Pages -> Build and deployment -> Source:
+GitHub Actions**. After that, pushing to `main` republishes it; you can also
+trigger a rebuild by hand from the Actions tab.
+
+The published site is `ticker.html` renamed to `index.html`, plus
+`ticker_files/` and `libs/` beside it (~15 MB, mostly the vendored plotly).
+Anyone with the link can open it — no GitHub account needed. Note that Pages
+sites on a public repo are public; the deck contains nothing private, and the
+embedded app still asks viewers for its own passphrase.
+
 ## Presenting
 
 - `S` — speaker view, with notes and a timer. Every slide has notes.

@@ -3,5 +3,11 @@
 plotly>=6.0
 pandas>=2.0
 numpy>=1.26
+
+# Quarto's Jupyter engine. ipykernel alone is enough on a machine with a full
+# Jupyter install; CI needs the pieces spelled out.
 ipykernel>=6.0
 jupyter-core>=5.0
+nbformat>=5.9
+nbclient>=0.9
+pyyaml>=6.0
