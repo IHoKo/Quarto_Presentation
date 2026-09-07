@@ -1,0 +1,7 @@
+# Rendering the deck needs Quarto (>= 1.4) plus these.
+# Versions are what this deck was built and verified against.
+plotly>=6.0
+pandas>=2.0
+numpy>=1.26
+ipykernel>=6.0
+jupyter-core>=5.0

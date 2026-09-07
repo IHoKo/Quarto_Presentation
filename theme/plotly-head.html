@@ -1,0 +1,11 @@
+<!-- plotly.js, served from disk rather than a CDN, so the deck presents with
+     no network. Loading it from <head> (instead of inlining the bundle in the
+     first chart's cell output) also keeps Quarto from hoisting a multi-megabyte
+     <script> out of the .slides container and floating that chart over the
+     whole deck.
+
+     Regenerate with:
+       python3 -c "import plotly.offline,pathlib; \
+         pathlib.Path('libs/plotly.min.js').write_text(plotly.offline.get_plotlyjs())"
+-->
+<script src="libs/plotly.min.js"></script>

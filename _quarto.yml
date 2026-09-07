@@ -1,0 +1,10 @@
+project:
+  type: default
+
+format:
+  revealjs:
+    # On-slide annotation while presenting (press "b"). It lives here rather
+    # than in ticker.qmd because the plugin cannot be bundled into a
+    # self-contained file, and the "share" profile switches it off — a
+    # document-level setting would take precedence over the profile.
+    chalkboard: true
