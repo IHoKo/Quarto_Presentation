@@ -1,0 +1,9 @@
+/.quarto/
+**/*.quarto_ipynb
+
+# Build outputs — regenerate with ./build.sh
+/_freeze/
+/dist/
+/ticker_files/
+/ticker.html
+/ticker.pdf

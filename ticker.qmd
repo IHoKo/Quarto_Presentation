@@ -1,0 +1,1077 @@
+---
+pagetitle: "Ticker · Engineering Guide"
+format:
+  revealjs:
+    theme: [dark, theme/ticker.scss]
+    width: 1600
+    height: 900
+    margin: 0.06
+    slide-number: c/t
+    transition: slide
+    transition-speed: fast
+    background-transition: fade
+    hash: true
+    menu: true
+    preview-links: false
+    highlight-style: github-dark
+    html-math-method: plain
+    footer: "Ticker · Engineering Guide · ticker-dash.fly.dev"
+    include-in-header: theme/plotly-head.html
+    include-after-body: theme/reveal-fixes.js
+    mermaid:
+      theme: dark
+jupyter: python3
+execute:
+  echo: false
+  warning: false
+  freeze: auto
+---
+
+```{python}
+#| label: setup
+
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+import plotly.io as pio
+from IPython.display import HTML, display
+
+# Design tokens, taken verbatim from the live app's stylesheet so the deck
+# and the product read as one system.
+PAPER = "#0e1116"   # --paper (dark)
+INK   = "#f5f2ec"   # --ink   (dark)
+SLATE = "#1a2028"
+GAIN  = "#2f7d6e"
+LOSS  = "#a8442f"
+BRASS = "#c9a227"
+MUTED = "#8b929c"
+GRID  = "#232a33"
+
+pio.templates["ticker"] = go.layout.Template(
+    layout=dict(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(family="Instrument Sans, ui-sans-serif, system-ui", color=INK, size=15),
+        colorway=[BRASS, GAIN, LOSS, MUTED],
+        xaxis=dict(gridcolor=GRID, zerolinecolor=GRID, linecolor=GRID,
+                   tickfont=dict(family="IBM Plex Mono, monospace", size=13, color=MUTED)),
+        yaxis=dict(gridcolor=GRID, zerolinecolor=GRID, linecolor=GRID,
+                   tickfont=dict(family="IBM Plex Mono, monospace", size=13, color=MUTED)),
+        # Legend sits *below* the plot: the top strip is reserved for the
+        # updatemenu buttons, and the two collide if both live up there.
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=13, color=MUTED),
+                    orientation="h", yanchor="top", y=-0.14, x=0),
+        margin=dict(l=64, r=28, t=60, b=76),
+        hoverlabel=dict(bgcolor=SLATE, bordercolor=BRASS,
+                        font=dict(family="IBM Plex Mono, monospace", size=13, color=INK)),
+    )
+)
+pio.templates.default = "ticker"
+
+# Fixed seed. Every illustrative series in this deck is reproducible.
+rng = np.random.default_rng(20260907)
+
+CONFIG = {"displayModeBar": False, "responsive": True}
+
+# Emit charts as plain HTML rather than via fig.show().
+#
+# fig.show() goes through a plotly *renderer*, and every renderer either
+# fetches plotly.js from a CDN or (the "notebook" one) pulls requirejs and
+# jquery from a CDN to load it — either way the deck stops working without a
+# network. The library is loaded from libs/plotly.min.js in <head> instead
+# (see theme/plotly-head.html), so each chart emits only its own init call.
+def show(fig):
+    height = fig.layout.height or 500
+    html = pio.to_html(
+        fig,
+        include_plotlyjs=False,          # loaded once, from <head>
+        full_html=False,
+        config=CONFIG,
+        default_width="100%",
+        default_height=f"{height}px",
+    )
+    display(HTML(html))
+
+def menu_style(**kw):
+    """Shared styling for Plotly's updatemenus, in the deck's palette."""
+    base = dict(
+        type="buttons", direction="right",
+        bgcolor=SLATE, bordercolor=GRID, borderwidth=1,
+        font=dict(family="IBM Plex Mono, monospace", size=12, color=INK),
+        pad=dict(r=6, t=6), showactive=True, active=0,
+        x=0, xanchor="left", y=1.20, yanchor="top",
+    )
+    base.update(kw)
+    return base
+```
+
+##  {#title .center}
+
+::: {style="max-width:26em"}
+[Engineering Guide · v1.0 · September 2026]{.kicker}
+
+::: {style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:4.6em;line-height:0.95;letter-spacing:-0.04em;margin:0.1em 0 0 0"}
+Ticker
+:::
+
+::: {.title-lead}
+A single-machine stock dashboard: live prices streamed to the browser, a
+portfolio derived from an append-only ledger, and an AI analyst that can
+propose changes but **never make them**.
+:::
+
+::: {style="margin-top:1.4em;font-family:'IBM Plex Mono',monospace;font-size:0.4em;letter-spacing:0.14em;text-transform:uppercase;color:#8b929c"}
+AAPL [187.42]{data-tick="187.42" style="color:#2f7d6e"} &nbsp;·&nbsp;
+MSFT [418.09]{data-tick="418.09" style="color:#2f7d6e"} &nbsp;·&nbsp;
+NVDA [126.55]{data-tick="126.55" style="color:#a8442f"} &nbsp;·&nbsp;
+ticker-dash.fly.dev
+:::
+:::
+
+::: {.notes}
+Fifteen minutes. The thesis: this is a small system that takes two ideas
+seriously — that a ledger is the only truth, and that a model may propose but
+never execute. Everything else follows from those two.
+:::
+
+## Project at a glance
+
+[Five layers · one process · three rented services]{.kicker}
+
+::: {.stat-grid .cols-3}
+::: {.stat}
+[Live]{.label}[ticker-dash.fly.dev]{.value}[One always-on machine, public HTTPS]{.note}
+:::
+::: {.stat}
+[Backend]{.label}[Python 3.12 · FastAPI]{.value}[14 REST routes · 1 WebSocket · 1 SSE]{.note}
+:::
+::: {.stat}
+[Frontend]{.label}[React 18 · Vite]{.value}[Zustand for prices, TanStack for REST]{.note}
+:::
+::: {.stat}
+[Tests]{.label}[[291]{.value .num}]{.value}[pytest · ruff · tsc · docker build]{.note}
+:::
+::: {.stat}
+[Machines]{.label}[[1]{.value .num}]{.value}[Pinned explicitly, not by default]{.note}
+:::
+::: {.stat}
+[Cost]{.label}[[~$3]{.value .num}]{.value}[per month, all in under $10]{.note}
+:::
+:::
+
+::: {.notes}
+Read the last three tiles together: 291 tests, one machine, three dollars. The
+interesting number is the **1**. It is a correctness constraint, not a budget one.
+:::
+
+## One process, on purpose
+
+::: {.split}
+::: {}
+::: {.pull}
+Everything below the browser runs as a single Python process on a single machine.
+:::
+
+::: {style="margin-top:0.8em;font-size:0.62em;line-height:1.55;color:#8b929c"}
+That is a **deliberate constraint, not a limitation of scale.**
+:::
+
+::: {.stages style="margin-top:0.6em"}
+::: {.stage}
+[01]{.n}[The market feed allows **one connection per key**. [A second machine would open a second socket.]{.m}]{.t}
+:::
+::: {.stage}
+[02]{.n}[The database is **a file on a disk that cannot be mounted twice**. [Two copies, two divergent ledgers.]{.m}]{.t}
+:::
+:::
+:::
+
+::: {}
+[The five layers]{.kicker}
+
+::: {style="font-size:0.5em;line-height:1.5"}
+**Data** — rented feeds + SQLite<br>
+[Finnhub, Twelve Data, Anthropic. Local state in one SQLite file on a Fly volume.]{.muted}
+
+**Processing** — providers + services<br>
+[Provider interface, TTL cache, price hub, FIFO lot engine, chat loop.]{.muted}
+
+**Application** — FastAPI<br>
+[14 REST routes, one WebSocket, one SSE stream, all behind a session gate.]{.muted}
+
+**Visualisation** — React + lightweight-charts<br>
+[Zustand for high-frequency prices, TanStack Query for REST.]{.muted}
+
+**Output** — one page, one origin<br>
+[The API serves the built SPA: one deploy, and no CORS.]{.muted}
+:::
+:::
+:::
+
+::: {.notes}
+The "one origin" decision at the bottom is why there is no CORS configuration
+anywhere in the codebase. It also means you cannot fetch this API from a slide
+deck — I tried.
+:::
+
+## Figure 1 · Runtime architecture
+
+[How the system is layered, end to end]{.kicker}
+
+```{mermaid}
+%%{init: {'theme':'base',
+  'fontFamily':'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
+  'flowchart':{'htmlLabels':true,'useMaxWidth':true,'curve':'basis','nodeSpacing':26,'rankSpacing':60},
+  'themeVariables':{
+  'background':'#0e1116','primaryColor':'#1a2028','primaryTextColor':'#f5f2ec',
+  'primaryBorderColor':'#232a33','lineColor':'#5c6672','fontSize':'14px',
+  'clusterBkg':'rgba(26,32,40,0.32)','clusterBorder':'#2b3441',
+  'edgeLabelBackground':'#0e1116'}}}%%
+flowchart LR
+  FS["Finnhub socket<br/>trades"]
+  FQ["Finnhub REST<br/>quotes · search"]
+  TD["Twelve Data<br/>daily bars"]
+  AN["Anthropic<br/>Messages API"]
+
+  CP["CompositeProvider<br/>routes by capability"]
+  CA["CachingProvider<br/>quotes 5s · candles 60s"]
+
+  PH["PriceHub<br/>coalesce 250 ms"]
+  LE["Lot engine<br/>FIFO · realized P/L"]
+  PF["Performance<br/>value over time"]
+  CS["ChatService<br/>propose only"]
+
+  WS["/ws/prices"]
+  RE["/api/* REST"]
+  SS["/api/chat/stream"]
+
+  ZS["Zustand store<br/>keyed by symbol"]
+  TQ["TanStack Query<br/>portfolio · candles"]
+  DB[("SQLite WAL<br/>Fly volume")]
+
+  FS --> PH --> WS --> ZS
+  FQ --> CP
+  TD --> CP
+  CP --> CA --> LE
+  CA --> PF
+  LE --> RE
+  PF --> RE
+  RE --> TQ
+  AN --> CS --> SS --> TQ
+  LE <--> DB
+  PF --> DB
+  CS -. "reads only" .-> LE
+
+  classDef rented fill:#151a21,stroke:#3a424c,color:#8b929c
+  classDef ours   fill:#1a2028,stroke:#39424e,color:#f5f2ec
+  classDef store  fill:#14201c,stroke:#2f7d6e,color:#f5f2ec
+  class FS,FQ,TD,AN rented
+  class CP,CA,PH,LE,PF,CS,WS,RE,SS,ZS,TQ ours
+  class DB store
+```
+
+[Grey is rented, slate is ours, green is the disk. Left to right: **sources → providers → services → API → browser**, all behind one session gate. The bottom row is the pushed price path — the next slide follows it.]{.caption}
+
+::: {.notes}
+Five bands, read top to bottom. Rented services in grey, our modules in slate,
+the database in green. Note what SQLite touches: the lot engine and performance
+only. Nothing on the price path goes near it.
+:::
+
+## Figure 1 · The gold path
+
+[The only route that is pushed rather than requested]{.kicker}
+
+::: {.split}
+::: {}
+```{mermaid}
+%%{init: {'theme':'base',
+  'fontFamily':'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
+  'flowchart':{'htmlLabels':true,'useMaxWidth':true,'curve':'basis','rankSpacing':40},
+  'themeVariables':{
+  'background':'#0e1116','primaryColor':'#1a2028','primaryTextColor':'#f5f2ec',
+  'primaryBorderColor':'#232a33','lineColor':'#5c6672','fontSize':'15px',
+  'edgeLabelBackground':'#0e1116'}}}%%
+flowchart TB
+  FS["Finnhub trade socket"]
+  PH["PriceHub<br/>coalesce 250 ms"]
+  WS["/ws/prices"]
+  ZS["Zustand price store"]
+  TP["TickerTape"]
+
+  FS -->|"hundreds / second"| PH
+  PH -->|"≤ 4 / second / symbol"| WS
+  WS -->|"tick"| ZS
+  ZS -->|"render"| TP
+
+  classDef gold fill:#2a2415,stroke:#c9a227,stroke-width:2.5px,color:#f5f2ec
+  class FS,PH,WS,ZS,TP gold
+```
+:::
+
+::: {}
+::: {.pull style="font-size:1.15em"}
+The rate mismatch is the design problem.
+:::
+
+::: {style="font-size:0.5em;line-height:1.55;color:#8b929c;margin-top:0.7em"}
+A liquid symbol prints **hundreds of trades a second**. A browser cannot redraw
+that often.
+
+The `PriceHub` keeps the latest price per symbol and flushes at most every
+**250 ms**, so the browser receives a bounded trickle.
+
+The store is keyed by symbol, so **one tick re-renders one row** — not the table.
+:::
+
+::: {.card style="margin-top:0.9em"}
+[Invariant]{.tag}[Track A never sees the database]{.h4}
+
+A price is not a fact worth persisting. It is overwritten, coalesced, pushed, and forgotten.
+:::
+:::
+:::
+
+::: {.notes}
+This is the slide to slow down on. Everything gold is pushed; everything else
+in the system is requested. The next slide shows what that ratio actually
+looks like.
+:::
+
+## The rate mismatch {.center}
+
+[Figure · what coalescing actually does]{.kicker}
+
+```{python}
+#| label: rate-mismatch
+
+DURATION   = 3.0      # seconds on screen
+TRADES_SEC = 300      # "hundreds per second"
+N = int(DURATION * TRADES_SEC)
+
+# A plausible intraday walk. The price is scenery; the *density* is the point.
+t = np.sort(rng.uniform(0, DURATION, N))
+price = 187.40 + np.cumsum(rng.normal(0, 0.006, N))
+
+def coalesce(interval_ms):
+    """PriceHub.flush(): last price per symbol, at most once per interval."""
+    step = interval_ms / 1000.0
+    edges = np.arange(step, DURATION + step, step)
+    xs, ys = [], []
+    for e in edges:
+        taken = price[t <= e]
+        if len(taken):
+            xs.append(e)
+            ys.append(taken[-1])
+    return xs, ys
+
+x250, y250 = coalesce(250)
+
+def note(interval_ms, n_out):
+    return [dict(
+        x=0.02, y=0.97, xref="paper", yref="paper",
+        xanchor="left", yanchor="top", showarrow=False, align="left",
+        font=dict(family="IBM Plex Mono, monospace", size=17, color=INK),
+        bgcolor="rgba(26,32,40,0.85)", bordercolor=BRASS, borderwidth=1,
+        borderpad=9,
+        text=(f"<b>{N} prints in</b>  →  <b style='color:{BRASS}'>{n_out} frames out</b>"
+              f"<br><span style='font-size:13px;color:{MUTED}'>"
+              f"flush every {interval_ms} ms · {N/max(n_out,1):.0f}× reduction</span>"),
+    )]
+
+fig = go.Figure()
+
+# Every trade that arrives on the socket.
+fig.add_trace(go.Scatter(
+    x=t, y=price, mode="markers", name=f"trade prints · {TRADES_SEC}/s",
+    marker=dict(size=3.4, color=MUTED, opacity=0.5),
+    hovertemplate="print<br>%{x:.3f}s · $%{y:.2f}<extra></extra>",
+))
+
+# What the browser is actually sent.
+fig.add_trace(go.Scatter(
+    x=x250, y=y250, mode="lines+markers", name="pushed to browser",
+    line=dict(color=BRASS, width=2.5, shape="hv"),
+    marker=dict(size=9, color=BRASS, line=dict(color=PAPER, width=2)),
+    hovertemplate="flush<br>%{x:.3f}s · $%{y:.2f}<extra></extra>",
+))
+
+buttons = []
+for ms in (100, 250, 1000):
+    xs, ys = coalesce(ms)
+    buttons.append(dict(
+        label=f"  {ms} ms  ",
+        method="update",
+        args=[{"x": [t, xs], "y": [price, ys]}, {"annotations": note(ms, len(xs))}],
+    ))
+
+fig.update_layout(
+    height=520, autosize=True,
+    annotations=note(250, len(x250)),
+    xaxis=dict(title="seconds", range=[0, DURATION]),
+    yaxis=dict(title="price", tickprefix="$"),
+    updatemenus=[menu_style(buttons=buttons, active=1)],
+    hovermode="closest",
+)
+show(fig)
+```
+
+[Illustrative — the coalescing ratio described in the guide, not a recording of real trades. Try the flush interval: 100 ms is smoother and four times the traffic; 1000 ms is cheap and visibly laggy. 250 ms is the shipped compromise.]{.caption}
+
+::: {.notes}
+Click the buttons. At 100 ms the gold line hugs the cloud but you have
+quadrupled the frames. At 1000 ms you can see the staircase lag behind the
+market. 250 ms is where it stops looking laggy and stops costing much.
+:::
+
+## Figure 2 · Three paths a change can take
+
+[Only track B, and the final step of track C, reach the database]{.kicker}
+
+```{mermaid}
+%%{init: {'theme':'base',
+  'fontFamily':'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
+  'flowchart':{'htmlLabels':true,'useMaxWidth':true,'curve':'basis','nodeSpacing':22,'rankSpacing':40},
+  'themeVariables':{
+  'background':'#0e1116','primaryColor':'#1a2028','primaryTextColor':'#f5f2ec',
+  'primaryBorderColor':'#232a33','lineColor':'#5c6672','fontSize':'13px',
+  'clusterBkg':'rgba(26,32,40,0.3)','clusterBorder':'#2b3441',
+  'edgeLabelBackground':'#0e1116'}}}%%
+flowchart LR
+%% Declared C, B, A on purpose: dagre stacks disconnected components in
+%% reverse, so this is what puts track A at the top of the slide.
+  subgraph C["C · CHAT TURN — proposes"]
+    direction LR
+    C1["Ask<br/>useChat · SSE"] --> C2["Tool loop<br/>chat.run_turn"]
+    C2 --> C3["Propose<br/>pending.propose"]
+    C3 --> GATE{"Confirm?<br/>user decides"}
+    GATE -->|"yes"| C4["Write<br/>/chat/confirm"]
+    GATE -->|"no · expires 5 min"| X["nothing written"]
+  end
+
+  subgraph B["B · PORTFOLIO — writes"]
+    direction LR
+    B1["Submit<br/>TransactionForm"] --> B2["Validate<br/>record_transaction"]
+    B2 --> B3["Append + lots<br/>FIFO · _replay"]
+    B3 --> B4["Recompute<br/>positions()"] --> B5["Render<br/>PositionsTable"]
+  end
+
+  subgraph A["A · LIVE PRICE — pushed"]
+    direction LR
+    A1["Trade print<br/>finnhub.stream"] --> A2["Cache + flag<br/>price_hub.record"]
+    A2 --> A3["Flush 250 ms<br/>price_hub.flush"]
+    A3 --> A4["Push tick<br/>routers/ws"] --> A5["Flip row<br/>TickerTape"]
+  end
+
+  classDef gold  fill:#2a2415,stroke:#c9a227,stroke-width:2.5px,color:#f5f2ec
+  classDef write fill:#16241f,stroke:#2f7d6e,stroke-width:2px,color:#f5f2ec
+  classDef gate  fill:#2a2415,stroke:#c9a227,stroke-width:3px,color:#f5f2ec
+  classDef dead  fill:#241614,stroke:#a8442f,color:#f5f2ec
+  class A1,A2,A3,A4,A5 gold
+  class B2,B3,C4 write
+  class GATE gate
+  class X dead
+```
+
+::: {.cols style="margin-top:0.7em;font-size:0.44em;line-height:1.5"}
+::: {.fragment}
+[**A · never touches SQLite.**]{.brass} Hundreds in, ≤ 4/s out. Overwritten and forgotten.
+:::
+::: {.fragment}
+[**B · the only ordinary write path.**]{.gain} Oversell is rejected *first*, in one transaction — a refusal leaves nothing behind.
+:::
+::: {.fragment}
+[**C · proposes.**]{.brass} The diamond is the only gate between a model proposal and a recorded trade.
+:::
+:::
+
+::: {.notes}
+Three tracks, one set of services. They differ in what starts them and what
+they are allowed to touch. Green = writes. Gold = pushed or gated.
+:::
+
+## Track B · Transactions are truth {.center}
+
+[Figure · why no share count is stored]{.kicker}
+
+```{python}
+#| label: fifo-lots
+
+# Three buys, then one sell of 60 shares at $205.
+LOTS = [("Lot 1 · Jan 12", 40, 150.0), ("Lot 2 · Mar 04", 30, 172.0), ("Lot 3 · May 21", 30, 198.0)]
+SELL_QTY, SELL_PX = 60, 205.0
+
+# FIFO: consume oldest lots first.
+remaining = SELL_QTY
+sold_f, held_f, realized_f = [], [], 0.0
+for _, qty, px in LOTS:
+    take = min(qty, remaining)
+    remaining -= take
+    sold_f.append(take)
+    held_f.append(qty - take)
+    realized_f += take * (SELL_PX - px)
+
+total_qty  = sum(q for _, q, _ in LOTS)
+total_cost = sum(q * p for _, q, p in LOTS)
+avg_px     = total_cost / total_qty
+realized_a = SELL_QTY * (SELL_PX - avg_px)
+
+labels_f = [f"{n}<br>${p:,.0f}" for n, _, p in LOTS]
+labels_a = [f"Single blended position<br>${avg_px:,.2f}"]
+
+def banner(method, realized, sub):
+    colour = GAIN if realized >= 0 else LOSS
+    return [dict(
+        x=0.99, y=0.97, xref="paper", yref="paper",
+        xanchor="right", yanchor="top", showarrow=False, align="right",
+        font=dict(family="IBM Plex Mono, monospace", size=16, color=INK),
+        bgcolor="rgba(26,32,40,0.85)", bordercolor=colour, borderwidth=1, borderpad=9,
+        # Plotly's SVG text parser accepts <span style>, but not a style
+        # attribute on <b> — one of those blanks the whole annotation.
+        text=(f"{method} · realized P/L "
+              f"<span style='color:{colour};font-size:21px'><b>${realized:,.0f}</b></span>"
+              f"<br><span style='font-size:13px;color:{MUTED}'>{sub}</span>"),
+    )]
+
+fig = go.Figure()
+fig.add_trace(go.Bar(
+    x=labels_f, y=sold_f, name=f"sold @ ${SELL_PX:,.0f}",
+    marker=dict(color=BRASS, line=dict(color=PAPER, width=1)),
+    hovertemplate="sold %{y} shares<extra></extra>",
+))
+fig.add_trace(go.Bar(
+    x=labels_f, y=held_f, name="still held",
+    marker=dict(color=SLATE, line=dict(color="#39424e", width=1)),
+    hovertemplate="held %{y} shares<extra></extra>",
+))
+
+fig.update_layout(
+    height=470, autosize=True, barmode="stack", bargap=0.55,
+    yaxis=dict(title="shares", range=[0, 45]),
+    xaxis=dict(title=""),
+    annotations=banner("FIFO", realized_f, "40 @ $150 + 20 @ $172 consumed, oldest first"),
+    updatemenus=[menu_style(buttons=[
+        dict(label="  FIFO lots  ", method="update",
+             args=[{"x": [labels_f, labels_f], "y": [sold_f, held_f]},
+                   {"annotations": banner("FIFO", realized_f,
+                                          "40 @ $150 + 20 @ $172 consumed, oldest first")}]),
+        dict(label="  Average cost  ", method="update",
+             args=[{"x": [labels_a, labels_a], "y": [[SELL_QTY], [total_qty - SELL_QTY]]},
+                   {"annotations": banner("Average cost", realized_a,
+                                          "lot structure gone — and it cannot be recovered")}]),
+    ])],
+)
+show(fig)
+```
+
+::: {.cols style="margin-top:0.3em"}
+::: {}
+[Illustrative lots. Same three buys, same sale — **$`{python} f"{realized_f - realized_a:,.0f}"`** apart in realized P/L.]{.caption}
+:::
+::: {}
+[Positions, cost basis and P/L are **recomputed** from the log every time. The log is append-only; a correction is a new row.]{.caption}
+:::
+:::
+
+::: {.notes}
+Toggle to Average cost. The bars collapse into one — and that is the whole
+argument. Average cost destroys the lot structure, so the moment you sell part
+of a position you can never recover the real basis. Hence: store no share count.
+:::
+
+## Track C · The model proposes {.center}
+
+::: {.split}
+::: {}
+::: {.pull style="font-size:1.2em"}
+It can propose portfolio changes but cannot make them. Nothing is written until you click Confirm.
+:::
+
+::: {style="font-size:0.44em;line-height:1.5;color:#8b929c;margin-top:0.6em"}
+Enforced **structurally**, not by prompting. The tool dispatcher is handed a
+read-only `PortfolioReader`, not a connection —
+:::
+
+::: {.pull style="font-size:0.92em;border-left-color:#2f7d6e;margin-top:0.4em"}
+it cannot write, because it holds no object capable of writing.
+:::
+
+::: {.stages style="margin-top:0.5em"}
+::: {.stage}
+[C2]{.n}[Tool loop runs read-only, **≤ 6 turns** [services/chat.py · run_turn&#40;&#41;]{.m}]{.t}
+:::
+::: {.stage}
+[C3]{.n}[Proposal parked in memory, **expires in 5 min** [services/pending.py]{.m}]{.t}
+:::
+::: {.stage}
+[C4]{.n}[Confirm is **single-use** — a replay is a 410 [routers/chat.py · POST /api/chat/confirm]{.m}]{.t}
+:::
+:::
+
+::: {style="font-size:0.4em;color:#8b929c;margin-top:0.5em"}
+A test runs every tool and asserts the ledger is **byte-for-byte unchanged**.
+:::
+:::
+
+::: {style="padding-top:2.2em"}
+
+```{=html}
+<div class="confirm">
+  <div class="head">Proposed change · awaiting confirmation</div>
+  <div class="body">Buy 12 shares of NVDA<br>at $126.55</div>
+  <div class="meta">est. $1,518.60 · expires in 4:52<br>price filled from the live quote</div>
+  <div class="btns">
+    <span class="btn primary">Confirm</span>
+    <span class="btn">Dismiss</span>
+  </div>
+</div>
+```
+
+::: {style="font-size:0.4em;color:#8b929c;margin-top:1em;max-width:15em;line-height:1.5"}
+Not distrust of the model. *"Sell everything,"* typed at 2am, should meet a
+confirmation dialog like any other destructive action.
+:::
+:::
+:::
+
+::: {.notes}
+The capability argument is the one worth stealing. Not "we told the model not
+to write" — the object graph makes writing unrepresentable.
+:::
+
+## Degrade honestly, never guess {.center}
+
+[Figure · value over time, reconstructed from the log]{.kicker}
+
+```{python}
+#| label: value-over-time
+
+days  = pd.date_range("2025-07-01", "2026-09-05", freq="B")
+n     = len(days)
+
+# Cost basis: a step function that moves only when a transaction is recorded.
+buys = {0: 12000, 46: 5200, 120: 7400, 205: 4100, 268: 6300}
+cost = np.zeros(n)
+running = 0.0
+for i in range(n):
+    running += buys.get(i, 0)
+    cost[i] = running
+
+# Market value: the basis, plus a return path that drifts and drawdowns.
+shock = np.zeros(n)
+shock[150:185] = np.linspace(0, -0.16, 35)
+shock[185:230] = -0.16 + np.linspace(0, 0.19, 45)
+ret   = np.cumsum(rng.normal(0.00075, 0.0092, n)) + shock
+value = cost * (1 + ret)
+
+# The point of the slide: an unpriceable window is a gap, never a zero.
+GAP0, GAP1 = 243, 254
+value_gapped = value.copy()
+value_gapped[GAP0:GAP1] = np.nan
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(
+    x=days, y=cost, mode="lines", name="cost basis",
+    line=dict(color=MUTED, width=1.6, shape="hv", dash="dot"),
+    hovertemplate="cost basis $%{y:,.0f}<extra></extra>",
+))
+fig.add_trace(go.Scatter(
+    x=days, y=value_gapped, mode="lines", name="market value",
+    line=dict(color=BRASS, width=2.4), connectgaps=False,
+    fill="tozeroy", fillcolor="rgba(201,162,39,0.10)",
+    hovertemplate="value $%{y:,.0f}<extra></extra>",
+))
+
+fig.add_vrect(
+    x0=days[GAP0], x1=days[GAP1 - 1],
+    fillcolor="rgba(168,68,47,0.20)", line_width=0, layer="below",
+)
+# Label the band by hand: add_vrect's own annotation anchors to the band edge
+# and runs off the right of the plot.
+fig.add_annotation(
+    x=days[(GAP0 + GAP1) // 2], y=1.0, yref="paper",
+    xanchor="right", yanchor="bottom", showarrow=False,
+    text="provider down — symbols named, value null",
+    font=dict(family="IBM Plex Mono, monospace", size=13, color=LOSS),
+)
+
+fig.update_layout(
+    height=480, autosize=True,
+    yaxis=dict(title="", tickprefix="$", separatethousands=True),
+    xaxis=dict(
+        rangeslider=dict(visible=False),
+        rangeselector=dict(
+            buttons=[
+                dict(count=1,  label="1M", step="month", stepmode="backward"),
+                dict(count=3,  label="3M", step="month", stepmode="backward"),
+                dict(count=6,  label="6M", step="month", stepmode="backward"),
+                dict(count=1,  label="1Y", step="year",  stepmode="backward"),
+                dict(label="ALL", step="all"),
+            ],
+            bgcolor=SLATE, activecolor=BRASS, bordercolor=GRID, borderwidth=1,
+            font=dict(family="IBM Plex Mono, monospace", size=12, color=INK),
+            x=0, y=1.12,
+        ),
+    ),
+)
+show(fig)
+```
+
+::: {.cols}
+::: {}
+[Illustrative series. Replayed forwards from the whole transaction log, valuing holdings at each day's close — `services/performance.py`.]{.caption}
+:::
+::: {}
+[**The gap is the feature.** A price that is unavailable renders as an em dash, not a zero. A symbol with no history is named, never zero-filled.]{.caption}
+:::
+:::
+
+::: {.notes}
+Range buttons mirror the app's own. The red band is a dead provider: the line
+stops rather than dropping to zero, because a zero would be a lie that looks
+like a crash.
+:::
+
+## Four rented services
+
+[What each is for — and what happens without it]{.kicker}
+
+::: {.cols style="margin-top:0.5em"}
+::: {.card .fragment}
+[Free tier]{.tag}[Finnhub — the price feed]{.h4}
+
+Live prices and symbol search over one permanently open connection. **The only free service offering genuinely real-time US prices over a push connection.**
+
+[**Without it** — no live prices. Cost basis and realized P/L are unaffected: they come from your own ledger.]{.without}
+:::
+
+::: {.card .fragment}
+[800 req/day]{.tag}[Twelve Data — the history]{.h4}
+
+Daily closes behind both charts. Exists purely to fill Finnhub's gap: history is a paid feature there, discovered only after deploying.
+
+[**Without it** — both charts return a 502 that names the fix. Everything else is unaffected.]{.without}
+:::
+:::
+
+::: {.cols style="margin-top:0.6em"}
+::: {.card .fragment}
+[Pay per use]{.tag}[Anthropic — the analyst]{.h4}
+
+Reads holdings, checks prices, reads history, searches the web, answers in plain language. **Proposes; never writes.**
+
+[**Without it** — the chat panel returns 503. The dashboard works normally.]{.without}
+:::
+
+::: {.card .fragment}
+[~$3 / month]{.tag}[Fly.io — where it runs]{.h4}
+
+One always-on machine, public HTTPS, and a volume that survives restarts. **Hosts that sleep would kill the market socket every time you looked away.**
+
+[**Without it** — the app runs on a laptop, reachable only by you, only while it is awake.]{.without}
+:::
+:::
+
+::: {.notes}
+The "without it" line is the honest part of a dependency slide. Three of the
+four degrade to a named error; only Fly is load-bearing, and that is hosting,
+not a component.
+:::
+
+## Five constraints
+
+[Decisions that shaped everything else]{.kicker}
+
+::: {.stages}
+::: {.stage}
+[01]{.n}[**Exactly one machine — for correctness, not cost.** [Two copies would open two sockets to a feed that allows one, and double-mount a volume that cannot be. The config pins it explicitly rather than relying on a default.]{.m}]{.t}
+:::
+::: {.stage}
+[02]{.n}[**The transaction log is the only source of truth.** [Holdings, average cost and P/L are recomputed every time. There is deliberately no stored share count.]{.m}]{.t}
+:::
+::: {.stage}
+[03]{.n}[**The model proposes; the person disposes.** [The dispatcher receives a narrow read-only reader, never a connection.]{.m}]{.t}
+:::
+::: {.stage}
+[04]{.n}[**It reports; it never advises.** [No recommendations, price targets or predictions. Asked whether to sell, it declines and offers data.]{.m}]{.t}
+:::
+::: {.stage}
+[05]{.n}[**Degrade honestly, never guess.** [Unavailable prices render as an em dash. Stale quotes are labelled with their age. A dead provider names the symbols it could not price.]{.m}]{.t}
+:::
+:::
+
+::: {.notes}
+If you remember one line from this deck, make it 02. Everything structural
+downstream — the FIFO engine, the replay, the refusal to cache positions —
+is a consequence of it.
+:::
+
+## Figure 3 · How it was built {.center}
+
+[A spec-driven loop with four feedback channels]{.kicker}
+
+```{mermaid}
+%%{init: {'theme':'base',
+  'fontFamily':'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
+  'flowchart':{'htmlLabels':true,'useMaxWidth':true,'curve':'basis','nodeSpacing':22,'rankSpacing':32},
+  'themeVariables':{
+  'background':'#0e1116','primaryColor':'#1a2028','primaryTextColor':'#f5f2ec',
+  'primaryBorderColor':'#232a33','lineColor':'#5c6672','fontSize':'13px',
+  'clusterBkg':'rgba(26,32,40,0.3)','clusterBorder':'#2b3441',
+  'edgeLabelBackground':'#0e1116'}}}%%
+flowchart LR
+  subgraph SPEC["AUTHORED BEFORE THE CODE"]
+    direction TB
+    P1["plan.md<br/>§1–§14 spec"]
+    P2["prompts.md<br/>per-phase asks"]
+    P3["CLAUDE.md<br/>durable decisions"]
+  end
+
+  S1["1 · Read the<br/>phase spec"]
+  S2["2 · Inspect repo<br/>verify externals"]
+  S3["3 · Implement<br/>backend · frontend · tests"]
+  S4["4 · Verify locally<br/>291 pytest · ruff · tsc"]
+  G{"All<br/>green?"}
+  S5["5 · Ship<br/>Actions → flyctl"]
+  S6["6 · Observe in production<br/>live feed · real market hours"]
+
+  SPEC --> S1 --> S2 --> S3 --> S4 --> G
+  G -. "no" .-> S3
+  G -->|"yes"| S5 --> S6
+  S6 -. "next phase" .-> S1
+
+  classDef spec fill:#151a21,stroke:#3a424c,color:#8b929c
+  classDef step fill:#1a2028,stroke:#39424e,color:#f5f2ec
+  classDef gate fill:#2a2415,stroke:#c9a227,stroke-width:2.5px,color:#f5f2ec
+  class P1,P2,P3 spec
+  class S1,S2,S3,S4,S5,S6 step
+  class G gate
+```
+
+::: {style="font-size:0.46em;line-height:1.55;color:#8b929c;max-width:44em;margin-top:0.5em"}
+Written by an AI agent — Claude Code, running Claude Opus 5 — against a
+specification authored **before any code existed**. There is no autonomous
+task-runner here: each phase was a deliberate, human-initiated cycle.
+`CLAUDE.md` is read before each phase and **written back when a decision changes**.
+:::
+
+::: {.notes}
+Six steps, one gate, two loops back. The spec was written first and is still
+the thing each phase is read from.
+:::
+
+## How defects surfaced
+
+[Four channels — three of which only fire after deploy]{.kicker}
+
+::: {.stat-grid .cols-4}
+::: {.stat .fragment}
+[Channel 1]{.label}[Test suite]{.value}[At stage 4, before anything ships. Catches what can be checked in isolation.]{.note}
+:::
+::: {.stat .fragment}
+[Channel 2]{.label}[Code review]{.value}[Found an unbounded cache that every one of the 291 tests passed.]{.note}
+:::
+::: {.stat .fragment}
+[Channel 3]{.label}[Production]{.value}[A status update written but never called — invisible until a real market opened.]{.note}
+:::
+::: {.stat .fragment}
+[Channel 4]{.label}[Screenshots]{.value}[The real browser. A chart dying on a CSS colour token.]{.note}
+:::
+:::
+
+::: {.pull style="margin-top:1.1em"}
+Three of the four only fire after deploy.
+:::
+
+::: {style="font-size:0.44em;line-height:1.5;color:#8b929c;margin-top:0.6em;max-width:40em"}
+Each produced a fix commit, and the git history **interleaves them with the
+phase commits** rather than hiding them.
+:::
+
+::: {.notes}
+This is the slide that justifies calling it a loop rather than a pipeline. A
+test suite alone would have caught exactly one of these four.
+:::
+
+## Operations {.center}
+
+[What it costs, and what keeps it alive]{.kicker}
+
+::: {.split}
+::: {}
+```{python}
+#| label: cost-breakdown
+
+items = ["Fly.io machine", "Anthropic", "Fly.io volume", "Twelve Data", "Finnhub"]
+mid   = [3.00, 3.00, 0.15, 0.0, 0.0]   # machine is $2–4; chat is per-message
+what  = ["Always-on server, public address, HTTPS",
+         "Chat, billed per message",
+         "1 GB disk the ledger survives on",
+         "Price history, 800 requests/day",
+         "Live prices, 60 requests/min"]
+
+colours = [BRASS if v > 0 else GAIN for v in mid]
+
+fig = go.Figure(go.Bar(
+    x=mid, y=items, orientation="h",
+    marker=dict(color=colours, line=dict(color=PAPER, width=1)),
+    customdata=what,
+    hovertemplate="<b>%{y}</b><br>%{customdata}<br>$%{x:.2f}/mo<extra></extra>",
+    text=["  $2–4", "  a few $", "  $0.15", "  free", "  free"],
+    textposition="outside", cliponaxis=False,
+    textfont=dict(family="IBM Plex Mono, monospace", size=15, color=INK),
+))
+
+fig.update_layout(
+    height=380, autosize=True, bargap=0.42, showlegend=False,
+    xaxis=dict(title="per month", tickprefix="$", range=[0, 6]),
+    yaxis=dict(autorange="reversed",
+               tickfont=dict(family="IBM Plex Mono, monospace", size=14, color=INK)),
+    margin=dict(l=160, r=90, t=20, b=52),
+)
+show(fig)
+```
+
+[Typical total: **under $10/month.** Machine and volume are real prices; the Anthropic line is per-message and depends on use.]{.caption}
+:::
+
+::: {}
+::: {.card}
+[Boot]{.tag}[Migrations run at boot, idempotently]{.h4}
+
+Never as a release command — **that machine runs with no volume attached**, and the work would vanish.
+:::
+
+::: {.card style="margin-top:0.7em"}
+[Nightly]{.tag}[Snapshot via SQLite online backup]{.h4}
+
+Not a file copy. With write-ahead logging, copying the database without its journal yields a **torn file that looks fine until you need it**.
+:::
+
+::: {.card style="margin-top:0.7em"}
+[Always]{.tag}[Deploy on every push]{.h4}
+
+GitHub Actions → flyctl. Structured JSON logs.
+:::
+:::
+:::
+
+::: {.notes}
+Two operational details that are easy to get wrong and expensive to discover:
+migrations at boot rather than as a release step, and online backup rather than
+`cp`. Both are WAL consequences.
+:::
+
+## Status · what is built
+
+[Six areas, all shipped]{.kicker}
+
+::: {.stat-grid .cols-3}
+::: {.stat}
+[Market data]{.label}[Live + historical]{.value}[Streaming prices with honest staleness labels; daily bars behind both charts.]{.note}
+:::
+::: {.stat}
+[Portfolio]{.label}[FIFO ledger]{.value}[Positions, cost basis, realized and unrealized P/L, allocation, value over time.]{.note}
+:::
+::: {.stat}
+[Analyst]{.label}[Tools + confirm]{.value}[Reads holdings and the web; proposes changes you approve.]{.note}
+:::
+::: {.stat}
+[Watchlist]{.label}[Editable tape]{.value}[Add or remove tracked symbols; validated against the feed before saving.]{.note}
+:::
+::: {.stat}
+[Security]{.label}[Passphrase + limits]{.value}[HttpOnly session cookie, rate-limited login, socket behind the same gate.]{.note}
+:::
+::: {.stat}
+[Operations]{.label}[CI + backups]{.value}[Deploy on every push, structured JSON logs, nightly database snapshot.]{.note}
+:::
+:::
+
+::: {.notes}
+Quick sweep — then straight to the live app.
+:::
+
+##  {#live-demo background-iframe="https://ticker-dash.fly.dev/" background-interactive="true"}
+
+[Live · ticker-dash.fly.dev]{.demo-badge}
+
+::: {.demo-overlay}
+[If the frame is blank, the session cookie was blocked]{.hint}
+[Open live demo ↗](https://ticker-dash.fly.dev/){target="_blank" rel="noopener"}
+:::
+
+::: {.notes}
+The real thing. Show: the tape flipping one row at a time; a position with its
+FIFO cost basis; then ask the analyst to add shares and let the confirm card
+appear — and *decline* it, to make the point that nothing was written.
+
+If the iframe shows only the gate: hit the gold button, demo in a real tab, then
+come back. Press → for the annotated backup.
+:::
+
+##  {#demo-backup visibility="uncounted"}
+
+[Backup · if the network or the market is down]{.kicker}
+
+```{=html}
+<div class="poster">
+  <div class="bar">
+    <i></i><i></i><i></i><span class="url">ticker-dash.fly.dev</span>
+  </div>
+  <div class="tape">
+    <span>AAPL <b>187.42</b> <span class="gain">+0.61%</span></span>
+    <span>MSFT <b>418.09</b> <span class="gain">+0.22%</span></span>
+    <span>NVDA <b>126.55</b> <span class="loss">−1.04%</span></span>
+    <span>SPY <b>551.30</b> <span class="gain">+0.14%</span></span>
+  </div>
+  <div class="panels">
+    <div class="panel">
+      <div class="h">Positions · FIFO cost basis</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:0.36em;line-height:1.9;margin-top:0.5em">
+        NVDA · 40 sh · basis $191.50 · <span class="loss">−$1,398</span><br>
+        AAPL · 120 sh · basis $150.00 · <span class="gain">+$4,490</span><br>
+        MSFT · 25 sh · basis $402.10 · <span class="gain">+$399</span>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="h">Analyst</div>
+      <div style="font-size:0.36em;line-height:1.6;margin-top:0.5em;color:#8b929c">
+        &ldquo;Your NVDA position is down 5.5% against a basis of $191.50.
+        I can propose a change &mdash; you would confirm it.&rdquo;
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+[Mock, drawn in the app's own palette — not a screenshot. Drop a real capture at `figs/dashboard.png` to replace it.]{.caption}
+
+::: {.notes}
+Uncounted slide. Only reach for it if the live app is unreachable.
+:::
+
+## Not investment advice {.center}
+
+::: {style="max-width:24em"}
+::: {.pull}
+This system reports data and answers questions about it.
+:::
+
+::: {style="font-size:0.55em;line-height:1.6;color:#8b929c;margin-top:0.9em"}
+Prices may be delayed. Nothing in it is a recommendation to buy or sell
+anything — and it is built so that **it cannot become one**.
+:::
+
+::: {style="border-top:1px solid #232a33;margin-top:1.6em;padding-top:1.1em;font-family:'IBM Plex Mono',monospace;font-size:0.4em;letter-spacing:0.16em;text-transform:uppercase;color:#c9a227"}
+Ticker · One machine · Three rented services · 291 tests
+:::
+
+::: {style="font-family:'IBM Plex Mono',monospace;font-size:0.36em;letter-spacing:0.1em;color:#8b929c;margin-top:0.6em"}
+[ticker-dash.fly.dev](https://ticker-dash.fly.dev/){target="_blank"}
+:::
+:::
+
+::: {.notes}
+Close on the last clause: built so that it cannot become one. That is the
+structural claim the whole talk has been making.
+:::

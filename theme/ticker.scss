@@ -1,0 +1,598 @@
+/*-- scss:defaults --*/
+
+// Typography lifted from the live app (ticker-dash.fly.dev):
+//   --font-display: Bricolage Grotesque 700
+//   --font-body:    Instrument Sans
+//   --font-mono:    IBM Plex Mono
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&display=swap');
+
+// Design tokens, verbatim from the app's stylesheet (dark-mode orientation:
+// the app flips --ink/--paper in dark mode, so ink is the warm off-white).
+$paper:  #0e1116;
+$ink:    #f5f2ec;
+$slate:  #1a2028;
+$gain:   #2f7d6e;
+$loss:   #a8442f;
+$brass:  #c9a227;
+
+$muted:  #8b929c;
+$rule:   #232a33;
+
+// Reveal / Quarto variables
+$body-bg:   $paper;
+$body-color: $ink;
+$link-color: $brass;
+$link-color-hover: lighten($brass, 12%);
+$selection-bg: rgba(201, 162, 39, 0.32);
+
+$presentation-font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+$presentation-heading-font: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+$presentation-heading-color: $ink;
+$presentation-heading-font-weight: 700;
+$presentation-font-size-root: 34px;
+$presentation-h1-font-size: 3.1em;
+$presentation-h2-font-size: 1.55em;
+$presentation-h3-font-size: 1.05em;
+$presentation-slide-text-align: left;
+$presentation-title-slide-text-align: left;
+
+$code-block-font-size: 0.5em;
+$code-color: $brass;
+
+/*-- scss:rules --*/
+
+// ---------------------------------------------------------------- base ----
+
+.reveal {
+  font-weight: 400;
+  letter-spacing: -0.004em;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4 {
+  text-transform: none;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  margin-bottom: 0.35em;
+}
+
+.reveal h2 {
+  // The guide sets a rule under every section head.
+  padding-bottom: 0.22em;
+  border-bottom: 1px solid $rule;
+}
+
+.reveal p { line-height: 1.5; }
+
+.reveal a { text-decoration: none; border-bottom: 1px solid rgba(201, 162, 39, 0.4); }
+.reveal a:hover { border-bottom-color: $brass; }
+
+.reveal strong { color: $ink; font-weight: 600; }
+.reveal em { color: $muted; font-style: italic; }
+
+.reveal .slide-number {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.42em;
+  background: none;
+  color: rgba(245, 242, 236, 0.35);
+}
+
+.reveal .footer {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.4em !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(245, 242, 236, 0.28) !important;
+}
+
+.reveal .progress { color: $brass; height: 3px; }
+
+// --------------------------------------------------------- typography ----
+
+// The guide's small-caps eyebrow: "FIGURE 1 · RUNTIME ARCHITECTURE"
+.kicker {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.42em;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: $brass;
+  margin: 0 0 0.5em 0;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.28);
+}
+
+// Caption under a chart. Deliberately quiet.
+// font-size is set in *root* units so it never compounds when a caption sits
+// inside an already-shrunk wrapper (that produced 0.15em text on first build).
+.caption {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+  letter-spacing: 0.03em;
+  color: $muted;
+  margin-top: 0.5em;
+}
+.caption strong, .caption b { color: $ink; }
+.caption code { font-size: 0.95em; }
+
+.mono {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.92em;
+  letter-spacing: -0.01em;
+}
+
+.reveal code:not(.sourceCode) {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.86em;
+  color: $brass;
+  background: rgba(201, 162, 39, 0.08);
+  padding: 0.08em 0.3em;
+  border-radius: 3px;
+}
+
+.gain  { color: $gain; }
+.loss  { color: $loss; }
+.brass { color: $brass; }
+.muted { color: $muted; }
+
+.big     { font-size: 1.35em; line-height: 1.2; }
+.small   { font-size: 0.78em; }
+.smaller { font-size: 0.66em; }
+
+.rule {
+  height: 1px;
+  background: $rule;
+  border: 0;
+  margin: 0.7em 0;
+}
+
+// A pulled quote — used for the guide's load-bearing sentences.
+.pull {
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.5em;
+  line-height: 1.15;
+  letter-spacing: -0.028em;
+  border-left: 3px solid $brass;
+  padding-left: 0.6em;
+  margin: 0.4em 0;
+}
+
+// ------------------------------------------------------------- layout ----
+
+.cols {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr));
+  gap: 1.1em;
+  align-items: start;
+}
+.cols-3 { --n: 3; }
+.cols-4 { --n: 4; }
+
+// Asymmetric split for "diagram + commentary" slides.
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+  gap: 1.4em;
+  align-items: start;
+}
+
+// -------------------------------------------------------- stat tiles ----
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
+  gap: 0.75em;
+  margin-top: 0.6em;
+}
+.stat-grid.cols-2 { --n: 2; }
+.stat-grid.cols-4 { --n: 4; }
+
+.stat {
+  border: 1px solid $rule;
+  border-top: 2px solid $brass;
+  background: linear-gradient(180deg, rgba(201, 162, 39, 0.05), rgba(0, 0, 0, 0));
+  padding: 0.7em 0.8em 0.85em;
+}
+
+.stat .label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.34em;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $brass;
+  display: block;
+  margin-bottom: 0.5em;
+}
+
+.stat .value {
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.92em;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: $ink;
+  display: block;
+}
+
+.stat .value.num { font-size: 1.7em; }
+
+.stat .note {
+  display: block;
+  margin-top: 0.4em;
+  font-size: 0.4em;
+  line-height: 1.4;
+  color: $muted;
+}
+
+// --------------------------------------------------------- info card ----
+
+.card {
+  border: 1px solid $rule;
+  border-left: 2px solid $brass;
+  padding: 0.65em 0.8em;
+  background: rgba(26, 32, 40, 0.45);
+}
+
+// A span, not an <h4>: a real heading inside a fenced div makes pandoc
+// promote the div to a <section>, which reveal then treats as a vertical
+// slide. This keeps the card looking like a heading without being one.
+.card .h4 {
+  display: block;
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 25px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.35em 0;
+  color: $ink;
+}
+
+.card .tag {
+  float: right;
+  margin-left: 0.6em;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $brass;
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  padding: 0.15em 0.45em;
+  border-radius: 2px;
+}
+
+.card p { font-size: 17px; line-height: 1.5; margin: 0.35em 0 0 0; color: $muted; }
+.card p strong { color: $ink; }
+
+// "WITHOUT IT" line on the dependency cards — the interesting column.
+.card .without {
+  display: block;
+  margin-top: 0.6em;
+  padding-top: 0.5em;
+  border-top: 1px dashed rgba(245, 242, 236, 0.14);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(200, 110, 88, 0.95);
+}
+.card .without strong,
+.card .without b {
+  color: $loss;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.85em;
+}
+
+// ------------------------------------------------- numbered stage list --
+
+.stages { margin-top: 0.4em; }
+
+// Hanging indent, NOT a grid. `[n]{.n}[text]{.t}` are two inline spans in one
+// paragraph, so a grid would treat the whole paragraph as a single cell and
+// squeeze it into the first (narrow) column — which wrapped the text one word
+// per line. Absolute-positioning the number sidesteps that entirely.
+.stage {
+  position: relative;
+  padding: 0.4em 0 0.4em 2.9em;
+  border-bottom: 1px solid rgba(35, 42, 51, 0.8);
+}
+.stage:last-child { border-bottom: 0; }
+
+.stage .n {
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: $brass;
+}
+
+.stage .t { display: block; font-size: 23px; line-height: 1.4; }
+.stage .t .m {
+  display: block;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 16px;
+  line-height: 1.45;
+  color: $muted;
+  margin-top: 0.2em;
+}
+
+// ------------------------------------------------------- confirm card --
+
+// A mock of the analyst's confirm card, in the app's own palette.
+.confirm {
+  border: 1px solid rgba(201, 162, 39, 0.5);
+  border-radius: 6px;
+  background: rgba(26, 32, 40, 0.75);
+  padding: 0.7em 0.85em;
+  max-width: 15em;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.confirm .head {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.33em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $brass;
+  margin-bottom: 0.6em;
+}
+
+.confirm .body {
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.85em;
+  letter-spacing: -0.02em;
+  color: $ink;
+}
+
+.confirm .meta {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.36em;
+  color: $muted;
+  margin-top: 0.45em;
+}
+
+.confirm .btns { display: flex; gap: 0.5em; margin-top: 0.8em; }
+
+.confirm .btn {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.36em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.5em 0.9em;
+  border-radius: 4px;
+  border: 1px solid $rule;
+  color: $muted;
+}
+.confirm .btn.primary {
+  border-color: $gain;
+  background: rgba(47, 125, 110, 0.2);
+  color: lighten($gain, 22%);
+}
+
+// ------------------------------------------------------------ mermaid --
+
+.reveal .mermaid,
+.reveal pre.mermaid {
+  background: none !important;
+  text-align: center;
+}
+
+// Do NOT override font-family here. Mermaid measures each label and sizes the
+// node box around it; swapping the font afterwards makes the text wider than
+// the box it was measured for, and every label gets clipped mid-word. The font
+// is set in each diagram's %%{init}%% block instead, so measurement and
+// rendering agree.
+// Sizing is set per-diagram in reveal-fixes.js from each SVG's own viewBox
+// ratio, so a tall diagram caps its width rather than overflowing its column.
+.reveal .mermaid svg,
+.reveal svg.mermaid-js {
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+}
+
+.reveal .mermaid .edgeLabel,
+.reveal .mermaid .edgeLabel foreignObject > div,
+.reveal .mermaid .edgeLabel span,
+.reveal .mermaid .edgeLabel p {
+  background: $paper !important;
+  background-color: $paper !important;
+  color: $muted !important;
+}
+
+// The gold path: pushed prices. Applied via `classDef gold` in the diagrams.
+.reveal .mermaid .gold > rect,
+.reveal .mermaid .gold > polygon,
+.reveal .mermaid .gold > path {
+  stroke: $brass !important;
+  stroke-width: 2.5px !important;
+  fill: rgba(201, 162, 39, 0.14) !important;
+}
+
+.reveal .mermaid .dim > rect,
+.reveal .mermaid .dim > polygon,
+.reveal .mermaid .dim > path {
+  opacity: 0.35;
+}
+.reveal .mermaid .dim .nodeLabel { opacity: 0.5; }
+
+// ------------------------------------------------------------- plotly --
+
+.reveal .plotly-graph-div {
+  margin: 0 auto;
+  background: none !important;
+}
+// Plotly injects a white rect in some builds; make sure it never shows.
+.reveal .plotly .main-svg { background: transparent !important; }
+
+// --------------------------------------------------- live demo slide ---
+
+// The escape hatch. `background-interactive` hands pointer events to the
+// iframe, so this has to sit above .slide-background and re-claim them.
+.demo-overlay {
+  position: fixed;
+  right: 28px;
+  bottom: 26px;
+  z-index: 60;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.demo-overlay a {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $paper;
+  background: $brass;
+  border: 1px solid $brass;
+  border-bottom: 1px solid $brass;
+  border-radius: 5px;
+  padding: 11px 18px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+}
+.demo-overlay a:hover { background: lighten($brass, 8%); }
+
+.demo-overlay .hint {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(245, 242, 236, 0.75);
+  background: rgba(14, 17, 22, 0.85);
+  border: 1px solid rgba(245, 242, 236, 0.15);
+  border-radius: 4px;
+  padding: 5px 10px;
+}
+
+// A corner badge naming what you are looking at, for the demo slide.
+.demo-badge {
+  position: fixed;
+  left: 28px;
+  top: 24px;
+  z-index: 60;
+  pointer-events: none;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $paper;
+  background: $brass;
+  padding: 6px 12px;
+  border-radius: 3px;
+}
+
+// The CSS-only poster used when no screenshot is supplied (mock, labelled).
+.poster {
+  border: 1px solid $rule;
+  border-radius: 8px;
+  overflow: hidden;
+  background: $slate;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.6);
+}
+.poster .bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 0.42em 0.6em;
+  background: rgba(14, 17, 22, 0.9);
+  border-bottom: 1px solid $rule;
+}
+.poster .bar i {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: rgba(245, 242, 236, 0.18);
+  display: inline-block;
+}
+.poster .bar .url {
+  margin-left: 0.6em;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.3em;
+  color: $muted;
+  letter-spacing: 0.06em;
+}
+.poster .tape {
+  display: flex;
+  gap: 1.6em;
+  padding: 0.5em 0.7em;
+  border-bottom: 1px solid $rule;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.38em;
+}
+.poster .tape b { color: $ink; font-weight: 600; }
+.poster .panels {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1px;
+  background: $rule;
+}
+.poster .panel { background: $paper; padding: 0.7em; min-height: 3.4em; }
+.poster .panel .h {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.3em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $brass;
+}
+
+// ------------------------------------------------------- title slide ---
+
+#title-slide .subtitle {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.44em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $brass;
+  margin-top: 0.4em;
+}
+
+.reveal .title-lead {
+  font-size: 0.62em;
+  line-height: 1.5;
+  color: $muted;
+  max-width: 22em;
+  margin-top: 0.8em;
+}
+
+// ----------------------------------------------------------- tables ----
+
+.reveal table {
+  font-size: 0.52em;
+  border-collapse: collapse;
+  margin: 0.4em 0;
+}
+.reveal table th {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.78em;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: $brass;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.35);
+  padding: 0.4em 0.8em 0.4em 0;
+  text-align: left;
+}
+.reveal table td {
+  border-bottom: 1px solid $rule;
+  padding: 0.38em 0.8em 0.38em 0;
+  color: $ink;
+}
+.reveal table tr:last-child td { border-bottom: 0; }
+
+// ------------------------------------------------------------ lists ----
+
+.reveal ul { margin-left: 0.4em; }
+.reveal ul li { margin-bottom: 0.35em; line-height: 1.42; }
+.reveal ul li::marker { color: $brass; }

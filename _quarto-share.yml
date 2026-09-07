@@ -1,0 +1,17 @@
+# Profile for a single shareable file:
+#   quarto render ticker.qmd --profile share
+#
+# Bundles plotly.js, the theme and reveal.js into one HTML document at
+# dist/ticker.html. Chalkboard is off because that plugin cannot be embedded
+# in self-contained output.
+#
+# The output goes to dist/ deliberately: rendering the standalone into the
+# project root deletes ticker_files/, which the normal build's ticker.html
+# depends on — the two builds would clobber each other.
+project:
+  output-dir: dist
+
+format:
+  revealjs:
+    embed-resources: true
+    chalkboard: false
