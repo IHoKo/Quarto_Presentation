@@ -52,7 +52,7 @@ GitHub Actions**. After that, pushing to `main` republishes it; you can also
 trigger a rebuild by hand from the Actions tab.
 
 The published site is `ticker.html` renamed to `index.html`, plus
-`ticker_files/` and `libs/` beside it (~15 MB, mostly the vendored plotly).
+`ticker_files/`, `libs/` and `figs/` beside it (~15 MB, mostly the vendored plotly).
 Anyone with the link can open it — no GitHub account needed. Note that Pages
 sites on a public repo are public; the deck contains nothing private, and the
 embedded app still asks viewers for its own passphrase.
@@ -75,8 +75,9 @@ cookie rules). So:
    first.
 2. If the frame still shows only the gate, hit the gold **Open live demo ↗**
    button — it opens a real tab, and the deck stays open behind it.
-3. If the network or the market is down, press `→` for the annotated backup
-   slide (it is uncounted, so it does not shift the slide numbers).
+3. If the network or the market is down, press `→` for the backup slide — a
+   real screenshot of the dashboard (uncounted, so it does not shift the
+   slide numbers).
 
 The deck itself needs no network: plotly.js is served from `libs/`, and only
 the webfonts and the demo iframe are remote.
@@ -92,7 +93,7 @@ libs/plotly.min.js      plotly.js, vendored so the deck works offline
 _quarto.yml             chalkboard (here so the share profile can disable it)
 _quarto-share.yml       the single-file profile
 export-pdf.py           PDF export at the deck's real aspect ratio
-figs/                   drop dashboard.png here to replace the mock poster
+figs/dashboard.png      screenshot shown on the backup slide
 ```
 
 ### Regenerating the vendored plotly

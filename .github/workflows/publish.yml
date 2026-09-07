@@ -46,8 +46,10 @@ jobs:
           cp ticker.html _site/index.html
           cp -r ticker_files _site/
           cp -r libs _site/
+          cp -r figs _site/
           test -s _site/index.html
           test -s _site/libs/plotly.min.js
+          test -s _site/figs/dashboard.png
 
       - uses: actions/upload-pages-artifact@v3
         with:

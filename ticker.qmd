@@ -1011,43 +1011,19 @@ come back. Press → for the annotated backup.
 
 ##  {#demo-backup visibility="uncounted"}
 
-[Backup · if the network or the market is down]{.kicker}
+[Backup · the real dashboard, if the live one will not load]{.kicker}
 
-```{=html}
-<div class="poster">
-  <div class="bar">
-    <i></i><i></i><i></i><span class="url">ticker-dash.fly.dev</span>
-  </div>
-  <div class="tape">
-    <span>AAPL <b>187.42</b> <span class="gain">+0.61%</span></span>
-    <span>MSFT <b>418.09</b> <span class="gain">+0.22%</span></span>
-    <span>NVDA <b>126.55</b> <span class="loss">−1.04%</span></span>
-    <span>SPY <b>551.30</b> <span class="gain">+0.14%</span></span>
-  </div>
-  <div class="panels">
-    <div class="panel">
-      <div class="h">Positions · FIFO cost basis</div>
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:0.36em;line-height:1.9;margin-top:0.5em">
-        NVDA · 40 sh · basis $191.50 · <span class="loss">−$1,398</span><br>
-        AAPL · 120 sh · basis $150.00 · <span class="gain">+$4,490</span><br>
-        MSFT · 25 sh · basis $402.10 · <span class="gain">+$399</span>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="h">Analyst</div>
-      <div style="font-size:0.36em;line-height:1.6;margin-top:0.5em;color:#8b929c">
-        &ldquo;Your NVDA position is down 5.5% against a basis of $191.50.
-        I can propose a change &mdash; you would confirm it.&rdquo;
-      </div>
-    </div>
-  </div>
-</div>
-```
+![](figs/dashboard.png){.shot fig-alt="The Ticker dashboard: a seven-symbol ticker tape, portfolio summary tiles, an empty positions table, the AAPL price chart, and the analyst panel mid-answer."}
 
-[Mock, drawn in the app's own palette — not a screenshot. Drop a real capture at `figs/dashboard.png` to replace it.]{.caption}
+[Captured out of hours — the tape reads **CLOSED** and unrealized P/L renders as **—**, not a zero, which is the *degrade honestly* rule doing its job.]{.caption}
 
 ::: {.notes}
 Uncounted slide. Only reach for it if the live app is unreachable.
+
+Talk to what is on screen: the tape across the top, the four summary tiles,
+and the analyst panel on the right answering in plain language with a
+disclaimer under it. The em dash in unrealized P/L is the honest-degradation
+rule from the constraints slide, visible in the product.
 :::
 
 ## Not investment advice {.center}

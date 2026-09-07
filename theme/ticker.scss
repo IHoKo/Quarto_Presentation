@@ -495,6 +495,20 @@ $code-color: $brass;
   border-radius: 3px;
 }
 
+// A real screenshot on the backup slide. Capped by height so the whole
+// dashboard stays on screen rather than running under the footer.
+.reveal .shot {
+  display: block;
+  margin: 0.2em auto 0;
+  max-height: 68vh;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  border: 1px solid $rule;
+  border-radius: 8px;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.6);
+}
+
 // The CSS-only poster used when no screenshot is supplied (mock, labelled).
 .poster {
   border: 1px solid $rule;
