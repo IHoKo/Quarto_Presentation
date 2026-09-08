@@ -5,7 +5,7 @@ price feed, a FIFO portfolio ledger and an AI analyst — is the case study; the
 subject is how it got built, and what that says about the economics of
 software now.
 
-14 slides plus an uncounted backup, a live demo of the running app at
+15 slides plus an uncounted backup, a live demo of the running app at
 <https://ticker-dash.fly.dev/>, four interactive Plotly charts, three Mermaid
 diagrams, and a full spoken script in the speaker notes.
 

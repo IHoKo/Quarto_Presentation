@@ -1125,7 +1125,7 @@ operate across a much wider surface than before.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 15:00]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:30 — TOTAL 14:45]</span>
 
 Here's what I take from it.
 
@@ -1144,16 +1144,67 @@ And once implementation stops being the bottleneck, that judgement becomes the b
 So if you take one sentence away, make it this one.
 
 The advantage isn't generating code faster. It's shortening the distance between an idea and a working solution.
+:::
 
+##  {#thanks .center}
+
+::: {style="max-width:30em"}
+[Questions welcome]{.kicker}
+
+::: {style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:3.6em;line-height:1;letter-spacing:-0.04em;margin:0.1em 0 0 0"}
+Thank you
+:::
+
+::: {style="margin-top:0.9em;font-size:0.52em;line-height:1.6;color:#8b929c;max-width:22em"}
 Nine hours, three dollars a month, and a thing that actually runs.
+:::
 
-<span style="color:#c1121f;font-weight:700">[PAUSE — 2 SECONDS]</span>
+::: {.cols .cols-3 style="margin-top:1.5em"}
+::: {}
+[The app]{.kicker}
+[ticker-dash.fly.dev](https://ticker-dash.fly.dev/){target="_blank" rel="noopener" style="font-family:'IBM Plex Mono',monospace;font-size:0.4em"}
+:::
+::: {}
+[The code]{.kicker}
+[github.com/IHoKo/<br>Live-Trading-Dashboard](https://github.com/IHoKo/Live-Trading-Dashboard){target="_blank" rel="noopener" style="font-family:'IBM Plex Mono',monospace;font-size:0.4em"}
+:::
+::: {}
+[These slides]{.kicker}
+[ihoko.github.io/<br>Quarto_Presentation](https://ihoko.github.io/Quarto_Presentation/){target="_blank" rel="noopener" style="font-family:'IBM Plex Mono',monospace;font-size:0.4em"}
+:::
+:::
 
-Thank you. I'm very happy to take questions — and the app is still open if anyone wants to poke at it.
+::: {style="margin-top:1.4em;font-family:'IBM Plex Mono',monospace;font-size:0.36em;letter-spacing:0.14em;text-transform:uppercase;color:#8b929c"}
+AAPL [319.97]{data-tick="319.97" style="color:#2f7d6e"} &nbsp;·&nbsp;
+MSFT [499.70]{data-tick="499.70" style="color:#2f7d6e"} &nbsp;·&nbsp;
+NVDA [230.36]{data-tick="230.36" style="color:#a8442f"}
+:::
+:::
 
-<span style="color:#c1121f;font-weight:700">[IF ASKED "COULD I DO THIS?": THE HONEST ANSWER IS THAT THE SPEC WAS THE HARD PART, AND WRITING A GOOD SPEC IS A NORMAL ENGINEERING SKILL.]</span>
+::: {.notes}
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:15 — TOTAL 15:00]</span>
 
-<span style="color:#c1121f;font-weight:700">[IF ASKED ABOUT CODE QUALITY: 291 TESTS, A LINTER, A TYPE CHECKER, AND A REVIEW GATE ON EVERY PHASE — AND POINT AT THE CACHE BUG THAT REVIEW CAUGHT.]</span>
+Thank you.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE — 2 SECONDS. DO NOT RUSH INTO QUESTIONS.]</span>
+
+Everything's up there if you want to look at it yourself. The app is live, the code is public, and these slides are on that last link — including all the working, so you can check any number I've given you.
+
+I'm very happy to take questions. And the app is still open if anyone wants to poke at it.
+
+<span style="color:#c1121f;font-weight:700">[LEAVE THIS SLIDE UP FOR Q&A. IF YOU NEED THE APP AGAIN, PRESS LEFT ARROW BACK TO THE DEMO SLIDE.]</span>
+
+<span style="color:#c1121f;font-weight:700">[PREPARED ANSWERS — DO NOT READ ALOUD:]</span>
+
+<span style="color:#c1121f;font-weight:700">[IF ASKED "COULD I DO THIS?" → THE SPEC WAS THE HARD PART. WRITING A CLEAR SPEC IS A SKILL PLENTY OF PEOPLE HERE ALREADY HAVE.]</span>
+
+<span style="color:#c1121f;font-weight:700">[IF ASKED ABOUT CODE QUALITY → 291 TESTS, A LINTER, A TYPE CHECKER, A REVIEW GATE ON EVERY PHASE. THEN POINT AT THE CACHE BUG THAT REVIEW CAUGHT AND THE TESTS DID NOT.]</span>
+
+<span style="color:#c1121f;font-weight:700">[IF ASKED WHAT IT COST → ONE MONTH OF A CLAUDE SUBSCRIPTION, WHICH I PAY ANYWAY, PLUS ABOUT THREE DOLLARS A MONTH TO HOST.]</span>
+
+<span style="color:#c1121f;font-weight:700">[IF PUSHED ON THE 9x → THE MEASURED SIDE IS THE CONSERVATIVE END AND ROUNDED DOWN; THE ESTIMATE IS MY OWN, WRITTEN BEFORE THE BUILD AND NEVER REVISED.]</span>
+
+<span style="color:#c1121f;font-weight:700">[IF ASKED WHAT YOU WOULD DO DIFFERENTLY → DEPLOY EVEN EARLIER. THREE OF THE FOUR DEFECTS ONLY APPEARED IN PRODUCTION.]</span>
 :::
 
 ##  {#demo-backup visibility="uncounted"}
