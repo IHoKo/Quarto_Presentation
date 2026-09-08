@@ -105,7 +105,7 @@
   // =================================================================
   // Tallest a diagram may be. Slides are 900px in a 1600x900 deck, and the
   // heading + kicker take roughly a third of that.
-  var MAX_H = '58vh';
+  var MAX_H = '70vh';
 
   function reRenderMermaid() {
     if (!window.mermaid || !mermaidStash.length) { return; }
