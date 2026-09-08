@@ -229,6 +229,29 @@ $code-color: $brass;
   color: $muted;
 }
 
+// A grid of small capability tiles. Spans in one paragraph, so this is a
+// flex wrap rather than a grid — a grid would treat the whole paragraph as
+// a single cell.
+.chipgrid {
+  display: block;
+  margin-top: 0.3em;
+}
+.chipgrid p { display: flex; flex-wrap: wrap; gap: 7px; margin: 0; }
+
+.chip {
+  display: inline-block;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 14px;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  color: $muted;
+  border: 1px solid $rule;
+  border-radius: 3px;
+  padding: 7px 10px;
+  background: rgba(26, 32, 40, 0.5);
+  white-space: nowrap;
+}
+
 // --------------------------------------------------------- info card ----
 
 .card {

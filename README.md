@@ -145,9 +145,8 @@ The time and cost claims are the spine of this talk, so each one is traceable.
 
 | Claim | Source |
 |---|---|
-| 21 commits over 5 working days, 2026-08-10 → 09-06 | `git log` |
-| ~9.2 h hands-on (lower bound) | inter-commit gaps capped at 45 min, plus 30 min lead-in per session |
-| ~16.2 h hands-on (upper bound) | first→last commit span on each working day |
+| 21 commits | `git log` (dates deliberately not shown on the slides) |
+| ~9 h hands-on (rounded down from 9.2) | inter-commit gaps over 45 min excluded, plus 30 min lead-in per session |
 | 7,963 Python / 3,033 TS+TSX lines | line count by extension, `node_modules` excluded |
 | 241 test functions in 15 files (291 collected, 13 `parametrize`) | `grep` over `backend/tests` |
 | 1,064 lines of planning docs | `plan.md` 606 + `CLAUDE.md` 342 + `prompts.md` 116 |
@@ -163,9 +162,10 @@ The time and cost claims are the spine of this talk, so each one is traceable.
 
 **Derived, and labelled as such on the slide**
 
-- **≈6× faster / 84% less time** — midpoint of the spec estimate over the
-  midpoint of the measured range. The slide shows the full 4×–10× range and
-  draws the uncertainty as error bars.
+- **≈9× faster / 89% less time** — the spec estimate (68–92 h at 8 h per
+  developer-day) over the measured 9 h. The slide shows the 8×–10× range and
+  draws the estimate's uncertainty as an error bar. The measured side is the
+  conservative end, rounded down, so the ratio understates rather than flatters.
 - **The cost chart** multiplies the spec's developer-days by a day-rate you
   choose from three buttons. No salary figure is asserted.
 - **The rate-mismatch chart** is illustrative of the ratio described in the
