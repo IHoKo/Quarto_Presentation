@@ -172,60 +172,102 @@ So I ran the experiment on myself. This is Ticker. It's a live stock dashboard w
 Over the next fifteen minutes I want to show you what it does, and then I want to be really specific about how it got built. Because the interesting part isn't the app. The interesting part is what the process says about how software gets made now.
 :::
 
-## The question I actually wanted to answer {.center}
+## 29 August – 6 September
 
-::: {.split}
-::: {}
-::: {.pull}
-Where does the time go when an AI agent writes most of the code?
-:::
+[The whole build, as it happened]{.kicker}
 
-::: {style="font-size:0.5em;line-height:1.6;color:#8b929c;margin-top:0.9em"}
-There is a comfortable story that says AI writes the code and the job is
-finished. There is an equally comfortable story that says none of it works and
-you rewrite it all anyway.
+```{python}
+#| label: commit-timeline
 
-**Neither matched what I saw.** So I kept the receipts: a spec written before
-any code, a decision log, one commit per phase, and every defect recorded
-where it surfaced.
-:::
+# Every commit in the Ticker repository, plotted by day and time of day.
+# Phase commits are the ones named "Phase N" in plan.md §10's build order.
+COMMITS = [
+    ("08-10", 9.12,  "Initial commit",                              False),
+    ("08-29", 23.05, "Scaffold repo · Docker + Fly config",         False),
+    ("08-29", 23.43, "Phase 0 · FastAPI serving the SPA",           True),
+    ("08-30", 8.32,  "Phase 1 · provider, quotes, caching",         True),
+    ("08-30", 12.47, "ci · pin the deploy to a single machine",     False),
+    ("08-30", 17.90, "Phase 2 · PriceHub, /ws/prices, ticker tape", True),
+    ("08-30", 18.32, "Fix unbounded candle cache",                  False),
+    ("08-31", 7.87,  "Make TTLCache bounded by construction",       False),
+    ("08-31", 8.22,  "Fix the four remaining review findings",      False),
+    ("08-31", 8.80,  "Phase 3 · FIFO lot engine, positions UI",     True),
+    ("08-31", 9.90,  "Phase 5 · chat, tools, SSE, propose/confirm", True),
+    ("08-31", 10.02, "Push feed status changes to subscribers",     False),
+    ("08-31", 10.30, "Phase 6 · auth, design pass, logging, backup",True),
+    ("08-31", 10.57, "Phase 4 · charts and value over time",        True),
+    ("08-31", 10.87, "Report the live provider in /api/health",     False),
+    ("08-31", 11.40, "Fix unreadable digits and crashing charts",   False),
+    ("08-31", 11.60, "Normalise colours for the chart canvas",      False),
+    ("08-31", 12.93, "Add the project field guide",                 False),
+    ("09-06", 20.98, "Watchlist · choose the tape symbols",         False),
+    ("09-06", 21.35, "Add a run-ticker skill",                      False),
+    ("09-06", 21.77, "Rewrite the guide as an engineering doc",     False),
+]
+DAYS = ["08-10", "08-29", "08-30", "08-31", "09-06"]
+LABEL = {"08-10": "Aug 10", "08-29": "Aug 29", "08-30": "Aug 30",
+         "08-31": "Aug 31", "09-06": "Sep 6"}
 
-::: {style="margin-top:1em;font-size:0.44em;color:#8b929c"}
-Everything in this talk is measured from that repository.
-:::
-:::
+fig = go.Figure()
+for is_phase, colour, size, name in [
+        (False, MUTED, 11, "fixes, review findings, operations"),
+        (True,  BRASS, 17, "one of the seven planned phases")]:
+    pts = [c for c in COMMITS if c[3] is is_phase]
+    fig.add_trace(go.Scatter(
+        x=[c[1] for c in pts], y=[LABEL[c[0]] for c in pts],
+        mode="markers", name=name,
+        marker=dict(size=size, color=colour, line=dict(color=PAPER, width=2),
+                    symbol="circle"),
+        customdata=[c[2] for c in pts],
+        hovertemplate="%{customdata}<extra></extra>"))
 
-::: {}
-::: {.card}
-[The claim]{.tag}[AI is an accelerator, not an author]{.h4}
+# Shade each working session so the shape of the days is visible at a glance.
+for day, lo, hi in [("08-29", 23.0, 23.5), ("08-30", 8.2, 18.4),
+                    ("08-31", 7.8, 13.0), ("09-06", 20.9, 21.9)]:
+    fig.add_shape(type="rect", x0=lo, x1=hi,
+                  y0=LABEL[day], y1=LABEL[day], yref="y", xref="x",
+                  line=dict(color=BRASS, width=8), opacity=0.16, layer="below")
 
-It compressed the work. It did not remove the engineering.
+fig.update_layout(
+    height=430, autosize=True,
+    xaxis=dict(title="time of day", range=[7, 24.5],
+               tickmode="array", tickvals=[8, 10, 12, 14, 16, 18, 20, 22, 24],
+               ticktext=["08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","24:00"]),
+    yaxis=dict(categoryorder="array", categoryarray=DAYS[::-1],
+               tickfont=dict(family="IBM Plex Mono, monospace", size=15, color=INK)),
+    margin=dict(l=110, r=40, t=20, b=64),
+    legend=dict(orientation="h", yanchor="top", y=-0.22, x=0))
+show(fig)
+```
 
-Direction, architecture, verification and the decision to ship stayed with me — and that is exactly where the remaining time went.
-:::
-:::
-:::
+[**21 commits. Five working days.** Every figure in this talk is measured from them, or quoted from the spec that was written before the first one.]{.caption}
 
 ::: {.notes}
 <span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 1:35]</span>
 
-So here's the question I actually set out to answer.
+Before any of that, one slide about method — because I'm going to put some fairly bold numbers in front of you later, and I'd rather you knew where they came from.
 
-When you hand most of the typing to an AI agent, where does the time go? What disappears, and what stubbornly doesn't?
+This is the commit history. Every dot is a commit. The rows are days, and across the bottom is time of day.
 
-There are two easy stories people tell about this. One is that AI writes your code now and engineering is basically over. The other is that everything it produces is garbage and you throw it away and do it properly.
+<span style="color:#c1121f;font-weight:700">[POINT AT THE SINGLE DOT ON THE AUG 10 ROW]</span>
 
-<span style="color:#c1121f;font-weight:700">[SLOW DOWN HERE]</span>
+That one's an empty repository. I created it and didn't touch it for nineteen days.
 
-Neither of those matched what I actually experienced. The truth was more interesting, and honestly more useful.
+<span style="color:#c1121f;font-weight:700">[RUN THE CURSOR ACROSS THE AUG 30 AND AUG 31 ROWS]</span>
 
-So I treated the project like an experiment. I kept the receipts. I wrote the specification before any code existed. I kept a decision log. I committed one phase at a time, so the history is readable. And I recorded every bug by where it surfaced.
+Then there's this. The gold dots are the seven planned phases. The grey ones are fixes and review findings.
 
-That means everything I'm about to tell you — every number, every time estimate — comes out of that repository. I'm not going to give you a vibe. I'm going to show you the evidence.
+<span style="color:#c1121f;font-weight:700">[SLOW DOWN. POINT AT THE AUG 31 CLUSTER.]</span>
 
-Here's the claim I'll be defending: AI acted as an accelerator, not an author. It compressed the work dramatically. It did not remove the engineering. And the parts that didn't compress turn out to be the interesting parts.
+What I'd draw your attention to is that morning. Between about eight and one, four of the seven phases landed.
 
-Let me show you what got built.
+<span style="color:#c1121f;font-weight:700">[PAUSE — DO NOT EXPLAIN IT YET. LET THEM SIT WITH IT.]</span>
+
+I'll come back to what that morning was supposed to cost.
+
+Everything I tell you from here — every hour, every estimate — comes out of this history or out of the specification I wrote before the first of those dots. If I can't point at a file for it, it isn't in the talk.
+
+So. Let me show you what those dots actually produced.
 :::
 
 ## What I built
