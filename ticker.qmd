@@ -159,9 +159,9 @@ ticker-dash.fly.dev
 ::: {.notes}
 <span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 0:45]</span>
 
-Good morning, and thank you for making the time.
+Right — my slot this month. I'll start with a question rather than a status update.
 
-Let me start with a question. How much working software do you think one person can build in about a day of effort?
+How much working software do you think one person can build in about a day of effort?
 
 <span style="color:#c1121f;font-weight:700">[PAUSE — LET THEM ANSWER IT IN THEIR HEAD]</span>
 
@@ -209,7 +209,7 @@ The idea was deliberately unglamorous. One screen, three things.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO EACH CARD IN TURN — DON'T READ THEM OUT]</span>
 
-Watch prices move as they actually happen. Know what I'd genuinely made or lost — the real number, not a rough one. And be able to just ask it things, in normal language.
+Watch prices move as they actually happen. Know exactly what I'd made or lost — the real number, not a rough one. And be able to just ask it things, in normal language.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE]</span>
 
@@ -634,7 +634,7 @@ Seven phases. Twenty-one trips round the loop.
 ::: {.notes}
 <span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:55 — TOTAL 9:00]</span>
 
-Here's the working rhythm. Five steps, and genuinely this simple.
+Here's the working rhythm. Five steps, and it really is this simple.
 
 <span style="color:#c1121f;font-weight:700">[TRACE THE DIAGRAM LEFT TO RIGHT AS YOU TALK]</span>
 
@@ -729,7 +729,7 @@ show(fig)
 ::: {.notes}
 <span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:25 — TOTAL 10:25]</span>
 
-This is the moment in the project that genuinely surprised me.
+This is the moment in the project that surprised me most.
 
 A popular stock like Apple has hundreds of trades every second.
 
@@ -747,7 +747,7 @@ I asked for live prices. What came back was live prices *and* a fix for a proble
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE GOLD STAIRCASE]</span>
 
-That's the gold line. Keep only the newest price, and send it four times a second. Nine hundred in, twelve out — and your eye genuinely cannot tell.
+That's the gold line. Keep only the newest price, and send it four times a second. Nine hundred in, twelve out — and your eye simply cannot tell.
 
 <span style="color:#c1121f;font-weight:700">[CLICK "every 100 ms"]</span> More often tracks the market closer, but quadruples the load on every browser.
 
