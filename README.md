@@ -1,13 +1,23 @@
 # Ticker — a case study in AI-assisted development
 
-A 15-minute reveal.js talk. Ticker — a live stock dashboard with a streaming
-price feed, a FIFO portfolio ledger and an AI analyst — is the case study; the
-subject is how it got built, and what that says about the economics of
-software now.
+A 15-minute reveal.js talk **written for a mixed technical / non-technical
+audience**. Ticker — a live stock dashboard with a streaming price feed, a
+FIFO portfolio ledger and an AI analyst — is the case study; the subject is
+how quickly an idea now becomes a working, deployed application.
 
-15 slides plus an uncounted backup, a live demo of the running app at
-<https://ticker-dash.fly.dev/>, four interactive Plotly charts, three Mermaid
-diagrams, and a full spoken script in the speaker notes.
+16 slides plus an uncounted backup, a live demo of the running app at
+<https://ticker-dash.fly.dev/>, four Plotly charts, one Mermaid diagram, and a
+full spoken script in the speaker notes.
+
+The narrative arc is: the idea → the finished product → a live demo → why this
+is normally a two-week team project → it took nine hours → how → side by side
+→ what it means. **Slide 12 is the load-bearing one**: a traditional-vs-AI
+scorecard covering time, people, technologies, effort, iteration, debugging
+and cost.
+
+Jargon is kept off the slides. Every technical idea that survives — coalescing
+a price feed, FIFO accounting, a model that can propose but not write — is
+stated in plain English on the slide and explained plainly in the notes.
 
 **Every number is measured from the Ticker repository**
 (<https://github.com/IHoKo/Live-Trading-Dashboard>) or quoted from its own
@@ -70,13 +80,24 @@ embedded app still asks viewers for its own passphrase.
 - `S` — speaker view. **The notes are a full spoken script**, written to be
   read aloud almost word-for-word.
 - **Presenter instructions are red, bold and in square brackets** —
-  `[SWITCH TO BROWSER]`, `[PAUSE]`, `[CLICK THE 100 ms BUTTON]`. Everything in
-  black is meant to be spoken. The two never look alike.
+  `[DEMO]`, `[CLICK]`, `[PAUSE]`, `[SHOW APP]`, `[POINT TO CHART]`. Everything
+  in black is meant to be spoken. The two never look alike, so there is nothing
+  to read aloud by accident.
 - Every slide opens with `[TARGET TIME: m:ss — TOTAL m:ss]`. **The deck totals
-  exactly 15:00.**
+  exactly 15:00**, and the script is written to *fit* that — 2,182 spoken words,
+  which is **145 wpm**, a normal conference pace. Per-slide budgets allow for
+  the demo choreography, the chart clicks and the marked pauses, and no single
+  slide needs more than 185 wpm.
+
+  If you edit the notes, re-check that. An earlier draft ran 3,286 words —
+  219 wpm — which is not deliverable in fifteen minutes, and neither was the
+  version before it. Word count is the constraint, not slide count.
 - `B` — chalkboard; `M` — menu; `F` — fullscreen; `ESC` — slide overview.
 - **Slide 4 is the live app** in an iframe, with step-by-step demo choreography
-  in the notes. **Slides 5, 7, 11 and 12 have live chart controls** — click them.
+  in the notes. **Slides 10 and 13 have live chart controls** — click them.
+  No button shows an "active" highlight (plotly paints that nearly white, over
+  a nearly white label); each of those charts states its current setting in its
+  own on-chart annotation instead.
 
 ### Before you present the live-demo slide
 
@@ -132,10 +153,21 @@ Four non-obvious failure modes are already worked around; keep them in mind.
   cards use `[Title]{.h4}` spans rather than `#### Title`.
 - **Two inline spans in one paragraph are one grid cell.** `[a]{.n}[b]{.t}`
   is a single `<p>`, so a CSS grid squeezes the whole thing into the first
-  column. `.stage` uses a hanging indent instead.
+  column. `.stage` uses a hanging indent instead; `.scorecard` — which really
+  does need a grid — puts `display: contents` on that `<p>` so the spans become
+  the grid items. `.chipgrid` flexes the `<p>` for the same reason.
+- **A `px` font-size inside a `<p>` still inherits the paragraph's leading.**
+  `.reveal p` is `line-height: 1.5`, computed against the *root* 40px, so a
+  20px caption came out with 60px of leading. `.caption` is `display: block`,
+  which removes the paragraph strut entirely.
 
 Also: don't set chart font sizes in `em` inside an already-shrunk wrapper —
 they compound. Captions are sized in `px` for that reason.
+
+And: `layout.updatemenus` has **no `activecolor`**. Plotly paints the active
+button a near-white, which erases a near-white label. The deck sets
+`showactive=False` and has each interactive chart name its current setting in
+an annotation.
 
 ## About the numbers
 
@@ -145,7 +177,7 @@ The time and cost claims are the spine of this talk, so each one is traceable.
 
 | Claim | Source |
 |---|---|
-| 21 commits | `git log` (dates deliberately not shown on the slides) |
+| 21 commits (the loop slide's "twenty-one times round") | `git log` (dates deliberately not shown on the slides) |
 | ~9 h hands-on (rounded down from 9.2) | inter-commit gaps over 45 min excluded, plus 30 min lead-in per session |
 | 7,963 Python / 3,033 TS+TSX lines | line count by extension, `node_modules` excluded |
 | 241 test functions in 15 files (291 collected, 13 `parametrize`) | `grep` over `backend/tests` |
@@ -153,12 +185,24 @@ The time and cost claims are the spine of this talk, so each one is traceable.
 
 **Quoted from the project's own spec, written before any code**
 
+> **Who wrote the spec.** `plan.md`, `CLAUDE.md` and `prompts.md` were
+> *drafted by the agent* from a stated goal, then directed and reviewed by a
+> human — they are not a hand-written document. The deck says so out loud on
+> slide 8 rather than implying sole authorship. It does not weaken the
+> estimate's provenance (it predates the build and was never revised), but it
+> does mean **the tool sized the work it then did**. That is a fair thing for
+> an audience to challenge, so slide 6's notes carry a prepared answer: the
+> sizing is conventional, it is in the repo to be read, and halving it still
+> leaves a 4–5× gap.
+
 | Claim | Source |
 |---|---|
 | 8.5–11.5 developer-days | `plan.md` §10, summing the seven phase estimates |
 | "The plan is 8–12 days of work" | `prompts.md`, opening paragraph |
 | Per-discipline split on the skills slide | the same §10 estimates, mapped to the role that would own each phase |
-| ~$3/mo running cost | `plan.md` §12, and the actual Fly.io invoice |
+| ~$3/mo hosting, and "under $10" all-in | `plan.md` §12 and the Fly.io invoice; the all-in figure is the guide's own operations table, which includes pay-per-use AI |
+| ~11,000 lines | the two line counts above, summed and rounded |
+| 18 specialisms | the capability grid on slide 5, one chip each |
 
 **Derived, and labelled as such on the slide**
 
@@ -166,6 +210,14 @@ The time and cost claims are the spine of this talk, so each one is traceable.
   developer-day) over the measured 9 h. The slide shows the 8×–10× range and
   draws the estimate's uncertainty as an error bar. The measured side is the
   conservative end, rounded down, so the ratio understates rather than flatters.
+- **The scorecard's bottom three rows** (iterating, finding the bugs, cost to
+  build) are qualitative comparisons, and the slide says so underneath. The
+  "finding the bugs" row is deliberately identical on both sides.
+- **The 250 ms coalescing decision was the agent's**, not the presenter's —
+  it raised the rate-mismatch problem and chose the interval. Slide 10 is
+  built on that being true, so do not re-edit it back into "I knew this had to
+  be solved"; an earlier draft of the deck claimed exactly that and it was
+  wrong.
 - **The cost chart** multiplies the spec's developer-days by a day-rate you
   choose from three buttons. No salary figure is asserted.
 - **The rate-mismatch chart** is illustrative of the ratio described in the

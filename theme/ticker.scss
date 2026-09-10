@@ -29,10 +29,10 @@ $presentation-font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-ser
 $presentation-heading-font: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
 $presentation-heading-color: $ink;
 $presentation-heading-font-weight: 700;
-$presentation-font-size-root: 34px;
+$presentation-font-size-root: 40px;
 $presentation-h1-font-size: 3.1em;
-$presentation-h2-font-size: 1.55em;
-$presentation-h3-font-size: 1.05em;
+$presentation-h2-font-size: 1.6em;
+$presentation-h3-font-size: 1.1em;
 $presentation-slide-text-align: left;
 $presentation-title-slide-text-align: left;
 
@@ -94,7 +94,7 @@ $code-color: $brass;
 // The guide's small-caps eyebrow: "FIGURE 1 · RUNTIME ARCHITECTURE"
 .kicker {
   font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.42em;
+  font-size: 0.46em;
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -108,10 +108,11 @@ $code-color: $brass;
 // font-size is set in *root* units so it never compounds when a caption sits
 // inside an already-shrunk wrapper (that produced 0.15em text on first build).
 .caption {
+  display: block;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 14px;
-  line-height: 1.55;
-  letter-spacing: 0.03em;
+  font-size: 20px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
   color: $muted;
   margin-top: 0.5em;
 }
@@ -153,12 +154,13 @@ $code-color: $brass;
 .pull {
   font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
   font-weight: 700;
-  font-size: 1.5em;
-  line-height: 1.15;
-  letter-spacing: -0.028em;
-  border-left: 3px solid $brass;
+  font-size: 1.75em;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  border-left: 4px solid $brass;
   padding-left: 0.6em;
   margin: 0.4em 0;
+  max-width: 17em;
 }
 
 // ------------------------------------------------------------- layout ----
@@ -200,7 +202,7 @@ $code-color: $brass;
 
 .stat .label {
   font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.34em;
+  font-size: 0.40em;
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -219,13 +221,13 @@ $code-color: $brass;
   display: block;
 }
 
-.stat .value.num { font-size: 1.7em; }
+.stat .value.num { font-size: 2.0em; }
 
 .stat .note {
   display: block;
-  margin-top: 0.4em;
-  font-size: 0.4em;
-  line-height: 1.4;
+  margin-top: 0.45em;
+  font-size: 0.48em;
+  line-height: 1.38;
   color: $muted;
 }
 
@@ -236,18 +238,18 @@ $code-color: $brass;
   display: block;
   margin-top: 0.3em;
 }
-.chipgrid p { display: flex; flex-wrap: wrap; gap: 7px; margin: 0; }
+.chipgrid p { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; }
 
 .chip {
   display: inline-block;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 14px;
+  font-size: 21px;
   line-height: 1.1;
-  letter-spacing: 0.02em;
-  color: $muted;
+  letter-spacing: 0.01em;
+  color: $ink;
   border: 1px solid $rule;
-  border-radius: 3px;
-  padding: 7px 10px;
+  border-radius: 4px;
+  padding: 11px 15px;
   background: rgba(26, 32, 40, 0.5);
   white-space: nowrap;
 }
@@ -256,8 +258,8 @@ $code-color: $brass;
 
 .card {
   border: 1px solid $rule;
-  border-left: 2px solid $brass;
-  padding: 0.65em 0.8em;
+  border-left: 3px solid $brass;
+  padding: 0.6em 0.75em;
   background: rgba(26, 32, 40, 0.45);
 }
 
@@ -268,10 +270,10 @@ $code-color: $brass;
   display: block;
   font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
   font-weight: 700;
-  font-size: 25px;
-  line-height: 1.2;
+  font-size: 31px;
+  line-height: 1.18;
   letter-spacing: -0.02em;
-  margin: 0 0 0.35em 0;
+  margin: 0 0 0.32em 0;
   color: $ink;
 }
 
@@ -279,7 +281,7 @@ $code-color: $brass;
   float: right;
   margin-left: 0.6em;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 12px;
+  font-size: 15px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: $brass;
@@ -288,7 +290,7 @@ $code-color: $brass;
   border-radius: 2px;
 }
 
-.card p { font-size: 17px; line-height: 1.5; margin: 0.35em 0 0 0; color: $muted; }
+.card p { font-size: 23px; line-height: 1.45; margin: 0.3em 0 0 0; color: $muted; }
 .card p strong { color: $ink; }
 
 // "WITHOUT IT" line on the dependency cards — the interesting column.
@@ -330,13 +332,13 @@ $code-color: $brass;
   left: 0;
   top: 0.62em;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 19px;
+  font-size: 23px;
   font-weight: 600;
   letter-spacing: 0.08em;
   color: $brass;
 }
 
-.stage .t { display: block; font-size: 23px; line-height: 1.4; }
+.stage .t { display: block; font-size: 27px; line-height: 1.38; }
 .stage .t .m {
   display: block;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
@@ -596,7 +598,7 @@ $code-color: $brass;
 }
 
 .reveal .title-lead {
-  font-size: 0.62em;
+  font-size: 0.66em;
   line-height: 1.5;
   color: $muted;
   max-width: 22em;
@@ -633,3 +635,268 @@ $code-color: $brass;
 .reveal ul { margin-left: 0.4em; }
 .reveal ul li { margin-bottom: 0.35em; line-height: 1.42; }
 .reveal ul li::marker { color: $brass; }
+
+// =========================================================================
+// Components added for the 2026-09 redesign: a mixed / non-technical
+// audience, presented on a large screen. Everything here is sized for
+// legibility from the back of a room rather than for density.
+// =========================================================================
+
+// ------------------------------------------------------- hero numbers ----
+
+// One number, as large as the slide can carry it. Used where the whole point
+// of the slide is a single figure.
+.hero {
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 3.4em;
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  color: $brass;
+  display: block;
+}
+.hero.ink { color: $ink; }
+.hero.sm  { font-size: 2.4em; }
+
+.hero-note {
+  display: block;
+  font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 0.5em;
+  line-height: 1.35;
+  letter-spacing: 0;
+  color: $muted;
+  margin-top: 0.5em;
+}
+
+// A row of big figures with no tile chrome — quieter than .stat-grid when the
+// numbers themselves should carry the slide.
+.figrow {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr));
+  gap: 1.2em;
+  align-items: end;
+  margin-top: 0.5em;
+}
+.figrow.n-3 { --n: 3; }
+.figrow.n-2 { --n: 2; }
+
+.fig-n {
+  display: block;
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.9em;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: $ink;
+}
+.fig-n.brass { color: $brass; }
+
+.fig-t {
+  display: block;
+  margin-top: 0.35em;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 19px;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $muted;
+}
+
+// --------------------------------------------------------- scorecard ----
+
+// The traditional-vs-AI comparison. A three-column grid: row label, the old
+// way, the new way. Built as a grid rather than a <table> so each cell can
+// carry a large figure and a quiet sub-line without fighting table metrics.
+.scorecard {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0 1.1em;
+  margin-top: 0.4em;
+}
+
+.scorecard > p { display: contents; }
+
+.scorecard > span,
+.scorecard > p > span {
+  padding: 0.42em 0;
+  border-bottom: 1px solid $rule;
+  align-self: stretch;
+}
+
+// Column headers.
+.scorecard .sc-h {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.35);
+  color: $muted;
+}
+.scorecard .sc-h.new { color: $brass; }
+
+// Row label, left column.
+.scorecard .sc-k {
+  font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: $muted;
+  align-self: center;
+}
+
+// A value cell. `.old` is grey and recessive, `.new` is ink with a gold tint
+// behind it, so the eye reads down the right-hand column on its own.
+.scorecard .sc-v {
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: $muted;
+  align-self: center;
+}
+.scorecard .sc-v.new {
+  color: $ink;
+  background: linear-gradient(90deg, rgba(201, 162, 39, 0.12), rgba(201, 162, 39, 0.03));
+  padding-left: 0.5em;
+  margin-left: -0.5em;
+  box-shadow: inset 2px 0 0 $brass;
+}
+.scorecard .sc-v small {
+  display: block;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  color: $muted;
+  margin-top: 0.18em;
+}
+
+// ------------------------------------------------------------- steps ----
+
+// A horizontal "1 → 2 → 3" strip. Chevrons are drawn in CSS so the markup
+// stays as plain spans (a real heading or list here would fragment the slide).
+.steps {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr));
+  gap: 0.9em;
+  margin-top: 0.6em;
+}
+.steps.n-3 { --n: 3; }
+
+.step {
+  position: relative;
+  border: 1px solid $rule;
+  border-top: 2px solid $brass;
+  background: rgba(26, 32, 40, 0.45);
+  padding: 0.6em 0.7em 0.7em;
+}
+.step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: -0.62em;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid rgba(201, 162, 39, 0.55);
+  border-right: 2px solid rgba(201, 162, 39, 0.55);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.step .sn {
+  display: block;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: $brass;
+  margin-bottom: 0.35em;
+}
+.step .st {
+  display: block;
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 27px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: $ink;
+}
+.step .sd {
+  display: block;
+  margin-top: 0.3em;
+  font-size: 21px;
+  line-height: 1.4;
+  color: $muted;
+}
+
+// --------------------------------------------------------- takeaways ----
+
+// A short list of value statements, set large. Deliberately not a <ul>: the
+// bullet glyph reads as documentation, and this is the closing beat.
+.takeaways { margin-top: 0.5em; }
+.take {
+  display: block;
+  position: relative;
+  padding: 0.42em 0 0.42em 1.5em;
+  font-size: 0.72em;
+  line-height: 1.35;
+  color: $ink;
+}
+.take::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: $brass;
+}
+.take b, .take strong { color: $brass; font-weight: 600; }
+
+// A quiet attribution line under a figure or claim — where a number came from.
+.source {
+  display: block;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 17px;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  color: rgba(139, 146, 156, 0.85);
+  margin-top: 0.6em;
+}
+
+// A single quoted line, set as evidence rather than decoration.
+.quote {
+  display: block;
+  font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 27px;
+  font-style: italic;
+  line-height: 1.45;
+  color: $ink;
+  border-left: 3px solid rgba(201, 162, 39, 0.5);
+  padding-left: 0.7em;
+}
+.quote .who {
+  display: block;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-style: normal;
+  font-size: 17px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $brass;
+  margin-top: 0.5em;
+}
+
+// A small caps line that qualifies the figure under it — "ABOUT $3",
+// "UNDER $10". Keeps the qualifier out of the display face, where a stray
+// ~ or < reads as a smudge rather than as a word.
+.pre {
+  display: block;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: $muted;
+  margin-bottom: 0.15em;
+}
