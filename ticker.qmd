@@ -159,9 +159,9 @@ ticker-dash.fly.dev
 ::: {.notes}
 <span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 0:45]</span>
 
-Right — my slot this month. I'll start with a question rather than a status update.
+I put my hand up for this one, because I think what I learned is worth passing on. It's a side project — built entirely in my own time.
 
-How much working software do you think one person can build in about a day of effort?
+Let me start with a question. How much working software do you think one person can build in about a day of effort?
 
 <span style="color:#c1121f;font-weight:700">[PAUSE — LET THEM ANSWER IT IN THEIR HEAD]</span>
 
