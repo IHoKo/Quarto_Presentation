@@ -243,20 +243,20 @@ Three ordinary-sounding asks. Three completely different engineering problems.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 2:20]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 2:15]</span>
 The idea itself is not exciting, and that's on purpose. One screen, three things.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO EACH CARD IN TURN — DON'T READ THEM OUT]</span>
 
-Watch prices move as they actually happen. Know exactly what a set of holdings had made or lost — the real number, not a rough one. And be able to just ask it questions, in normal language.
+Watch prices move as they happen. Know exactly what the holdings had made or lost — the real number, not a rough one. And be able to just ask it questions, in normal language.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE]</span>
 
-Anyone in this room could write those three sentences in about a minute.
+Anyone here could write those three sentences in a minute.
 
 <span style="color:#c1121f;font-weight:700">[SLOW DOWN]</span>
 
-But underneath, each one is a completely different problem. Live data is one discipline. Financial accounting is another. Building an AI assistant that's actually safe to use is a third.
+But underneath, each one is a completely different problem. Live data is one discipline. Financial accounting is another. A safe AI assistant is a third.
 
 <span style="color:#c1121f;font-weight:700">[TRANSITION — ASK THIS AS A REAL QUESTION]</span>
 
@@ -280,20 +280,20 @@ In most organisations, that list isn't one person. It's a team.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 3:05]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 2:55]</span>
 This is why.
 
 <span style="color:#c1121f;font-weight:700">[GESTURE ACROSS THE WHOLE GRID — DO NOT READ THE ITEMS OUT]</span>
 
 Eighteen separate skills go into that one screen.
 
-I won't read them out. But look at the range. Keeping a live connection open to the stock market. Designing a database. The accounting method for working out gains properly. Logins, so that not just anyone can open it. Renting a server, getting the app onto it, and keeping it running when I'm not looking. Visual design. Testing.
+I won't read them out — but look at the range. Keeping a live connection open to the stock market. Designing a database. The accounting method for working out gains. Logins, so that not just anyone can open it. Renting a server, getting the app onto it, keeping it running. Visual design. Testing.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE, THEN SLOW DOWN]</span>
 
-Now read that as a staffing question rather than a technical one.
+And those aren't variations on one skill. They're separate disciplines — back-end, front-end, data modelling, design, deployment, testing.
 
-In most organisations, that isn't one person. That's a back-end engineer, a front-end engineer, someone comfortable with data modelling, a designer, and somebody who owns deployment.
+Plenty of people cover several. Very few cover all of them well.
 
 <span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
 
@@ -365,14 +365,14 @@ show(fig)
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 3:55]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 3:45]</span>
 This is the honest answer, and I want to be careful about where the number comes from.
 
 Before any code existed, this project had a written specification. The work was broken into seven phases, and each was sized in developer-days — the ordinary way any team estimates work.
 
 <span style="color:#c1121f;font-weight:700">[EMPHASISE]</span>
 
-The important thing is the timing. That estimate is timestamped in the project, it was made before anyone knew how long the build would take, and it was never revised afterwards.
+The important thing is the timing. That estimate is timestamped in the project, it was written before the build started, and it was never revised afterwards. So nothing in it was shaped by how the build actually went.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO CHART]</span>
 
@@ -380,7 +380,7 @@ Grouped by the kind of work: the engine room, everything you see, the data and t
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE BIG NUMBER — SAY IT SLOWLY, YOU COME BACK TO IT LATER]</span>
 
-Eight and a half to eleven and a half developer-days. Call it two working weeks — spread across five or six specialisms.
+That comes to about ten developer-days. Call it two working weeks of work, spread across five or six different disciplines.
 
 <span style="color:#c1121f;font-weight:700">[IF CHALLENGED ON THIS ESTIMATE — DO NOT READ ALOUD: THE PLAN WAS DRAFTED BY THE SAME TOOL THAT DID THE BUILD. SAY SO PLAINLY IF ASKED. THE SIZING IS CONVENTIONAL, IT IS IN THE REPOSITORY TO BE READ, AND THEY HAVE JUST SEEN THE SCOPE. INVITE THEM TO SUBSTITUTE THEIR OWN NUMBER.]</span>
 
@@ -424,7 +424,7 @@ So that's the traditional picture. Here's how I actually went at it.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 4:55]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 4:45]</span>
 This is the slide I'd most like you to remember.
 
 Nobody opened a chat window and asked for a stock dashboard. The first thing made wasn't code — it was a plan. A thousand lines of ordinary English: what it should do, how it should behave when things go wrong, and what "finished" meant.
@@ -459,7 +459,7 @@ So instead of one big ask, we settled into a rhythm.
 flowchart LR
   BRIEF["<b>Describe<br/>one piece</b>"]
   BUILD["<b>AI builds it</b><br/>code + tests"]
-  CHECK["<b>Machine checks it</b><br/>291 tests run"]
+  CHECK["<b>Automatic checks</b><br/>291 tests, every time"]
   READ["<b>I read it</b>"]
   SHIP["<b>Ship it</b><br/>live in minutes"]
 
@@ -479,12 +479,12 @@ Seven phases. Twenty-one trips round the loop.
 [Small pieces meant every mistake stayed small. And shipping took minutes rather than a release cycle — so problems showed up while the work was still fresh.]{.caption}
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 5:45]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:55 — TOTAL 5:40]</span>
 Five steps, and it really is this simple.
 
 <span style="color:#c1121f;font-weight:700">[TRACE THE DIAGRAM LEFT TO RIGHT AS YOU TALK]</span>
 
-I describe one piece — never the whole thing. The AI builds it and writes the tests at the same time. Then the machine checks its own work automatically, which is where the cheap mistakes get caught, for free. Then I read it. Then it goes live.
+I describe one piece — never the whole thing. The AI builds it and writes the tests at the same time. Then a set of automatic checks runs on its own — the tests, plus tools that read the code looking for mistakes. No person involved, and it's where the cheap errors get caught for free. Then I read it. Then it goes live.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE ARROW LOOPING BACK]</span>
 
@@ -492,7 +492,7 @@ And straight round again. Seven planned phases, twenty-one trips round the circu
 
 <span style="color:#c1121f;font-weight:700">[SLOW DOWN — THIS IS THE VALUE POINT]</span>
 
-What matters is the speed of that loop, not any single step in it. Small pieces mean every mistake stays small. And because getting something in front of real data takes minutes rather than a release cycle, you find out you were wrong while the work is still fresh.
+What matters is the speed of that loop, not any single step. Small pieces mean every mistake stays small. And because shipping takes minutes rather than a release cycle, you find out you were wrong while the work is still fresh.
 
 <span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
 
@@ -571,7 +571,7 @@ show(fig)
 [Illustrative of the ratio described in the project's guide, not a recording of real trades.]{.caption}
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:35 — TOTAL 7:20]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:35 — TOTAL 7:15]</span>
 This is the moment that surprised me most.
 
 A popular stock like Apple has hundreds of trades every second.
@@ -644,7 +644,7 @@ Three of the four only appear **after** it is live — which is exactly why ship
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:05 — TOTAL 8:25]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:05 — TOTAL 8:20]</span>
 It'd be a disservice to show you only the parts that went well. Four real problems, each caught a different way.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO TOP-LEFT]</span>
@@ -707,7 +707,7 @@ It can read everything and suggest a change. It cannot make one.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 9:05]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 9:00]</span>
 This is what came out the other end.
 
 About eleven thousand lines of code. Two hundred and ninety-one automated tests — small programs that check the software still works every time anything changes. And it costs about three dollars a month to keep running.
@@ -733,7 +733,7 @@ Rather than describe it any further — let me just show you.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:40 — TOTAL 10:45]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:45 — TOTAL 10:45]</span>
 <span style="color:#c1121f;font-weight:700">[BEFORE THE TALK: LOG IN TO ticker-dash.fly.dev IN ANOTHER TAB OF THIS SAME BROWSER. IF THIS FRAME SHOWS THE PASSPHRASE GATE, CLICK THE GOLD "OPEN LIVE DEMO" BUTTON, BOTTOM RIGHT, AND DEMO IN A REAL TAB.]</span>
 
 <span style="color:#c1121f;font-weight:700">[SHOW APP]</span>
@@ -885,7 +885,7 @@ But time is only one column of this. Here's the whole thing side by side.
   <span class="sc-v">68–92 hours<small>the plan's own estimate</small></span>
   <span class="sc-v new">9 hours<small>measured</small></span>
   <span class="sc-k">People</span>
-  <span class="sc-v">5–6 specialisms<small>a small team, and their calendars</small></span>
+  <span class="sc-v">5–6 disciplines<small>back-end, front-end, data, design, deployment</small></span>
   <span class="sc-v new">One person<small>directing the work</small></span>
   <span class="sc-k">Technologies</span>
   <span class="sc-v">18<small>each one learned first</small></span>
@@ -915,7 +915,7 @@ Same application, two ways of getting there. Grey is how this would normally go;
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE PEOPLE ROW]</span>
 
-People. Five or six specialisms — and that isn't just headcount, it's five or six calendars that have to line up.
+People. Five or six separate disciplines. Plenty of engineers cover several — very few cover all of them.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE TECHNOLOGIES ROW — SLOW DOWN, THIS IS THE MOST IMPORTANT ROW]</span>
 
