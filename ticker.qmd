@@ -143,9 +143,9 @@ Ticker
 :::
 
 ::: {.title-lead}
-A live stock dashboard I built in my own time — with an AI writing the code.
+A live stock dashboard: prices straight from the market, a record of everything I've bought and sold, and an AI assistant built in.
 
-**What I want to show you is how that changed the work.**
+**I didn't write the code. What I want to show you is what that changes.**
 :::
 
 ::: {style="margin-top:1.2em;font-family:'IBM Plex Mono',monospace;font-size:0.44em;letter-spacing:0.14em;text-transform:uppercase;color:#8b929c"}
@@ -157,10 +157,14 @@ ticker-dash.fly.dev
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:35 — TOTAL 0:35]</span>
-I put my hand up for this one, because I think what I learned is worth passing on.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 0:45]</span>
+Good morning.
 
-Over the last few weeks, in my own time, I built a real working application. It's called Ticker. It's a live stock dashboard, and it's running on the internet right now.
+Over the last few weeks I built a working application. It's called Ticker, and it's a live stock dashboard.
+
+So — it pulls share prices straight from the stock market, as they change. It keeps a record of everything I've bought and sold, and works that out into what I've actually made or lost. And there's an AI assistant built into it that can answer questions about any of it.
+
+It's running on the internet right now.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE]</span>
 
@@ -173,7 +177,7 @@ The point is *how* it got built. I didn't write most of the code — an AI did. 
 
 ## What I was trying to find out
 
-[One experiment, in my own time]{.kicker}
+[One experiment, one question]{.kicker}
 
 ::: {.pull style="margin-top:0.3em"}
 What can one person actually build now, if an AI writes the code?
@@ -186,7 +190,7 @@ What can one person actually build now, if an AI writes the code?
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 1:25]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 1:30]</span>
 Let me set this up properly, because it shapes how you should read everything that follows.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE QUESTION]</span>
@@ -199,7 +203,7 @@ Three things worth knowing before we start.
 
 I don't build software for a living. That's not modesty — it's the whole reason this is an interesting question to ask.
 
-I deliberately didn't pick a tutorial project. I picked something real, with real complications, that I'd actually want to use.
+I didn't want a tutorial project. I picked something real, with real complications, that I'd actually use.
 
 And all of it happened in evenings and weekends. The AI wrote the code. I decided what it should be, and whether what came back was any good.
 
@@ -237,8 +241,8 @@ Three ordinary-sounding asks. Three completely different engineering problems.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 2:05]</span>
-The idea itself is deliberately unglamorous. One screen, three things.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 2:10]</span>
+The idea itself is not exciting, and that's on purpose. One screen, three things.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO EACH CARD IN TURN — DON'T READ THEM OUT]</span>
 
@@ -274,14 +278,14 @@ In most organisations, that list isn't one person. It's a team.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 2:50]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 2:55]</span>
 This is why.
 
 <span style="color:#c1121f;font-weight:700">[GESTURE ACROSS THE WHOLE GRID — DO NOT READ THE ITEMS OUT]</span>
 
 Eighteen separate skills go into that one screen.
 
-I won't read them out. But look at the range. Keeping a live connection open to the stock market. Designing a database. The accounting method for working out gains properly. Security. The machinery that gets it onto the internet and keeps it there. Visual design. Testing.
+I won't read them out. But look at the range. Keeping a live connection open to the stock market. Designing a database. The accounting method for working out gains properly. Logins, so that nobody but me can see my portfolio. Renting a server, getting the app onto it, and keeping it running when I'm not looking. Visual design. Testing.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE, THEN SLOW DOWN]</span>
 
@@ -349,7 +353,7 @@ show(fig)
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 3:40]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 3:45]</span>
 This is the honest answer, and I want to be careful about where the number comes from.
 
 Before any code existed, this project had a written specification. The work was broken into seven phases, and each was sized in developer-days — the ordinary way any team estimates work.
@@ -408,7 +412,7 @@ So that's the traditional picture. Here's how I actually went at it.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 4:40]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 4:45]</span>
 This is the slide I'd most like you to remember.
 
 Nobody opened a chat window and asked for a stock dashboard. The first thing made wasn't code — it was a plan. A thousand lines of ordinary English: what it should do, how it should behave when things go wrong, and what "finished" meant.
@@ -463,7 +467,7 @@ Seven phases. Twenty-one trips round the loop.
 [Small pieces meant every mistake stayed small. And shipping took minutes rather than a release cycle — so problems showed up while the work was still fresh.]{.caption}
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 5:30]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 5:35]</span>
 Five steps, and it really is this simple.
 
 <span style="color:#c1121f;font-weight:700">[TRACE THE DIAGRAM LEFT TO RIGHT AS YOU TALK]</span>
@@ -555,7 +559,7 @@ show(fig)
 [Illustrative of the ratio described in the project's guide, not a recording of real trades.]{.caption}
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:35 — TOTAL 7:05]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:35 — TOTAL 7:10]</span>
 This is the moment that surprised me most.
 
 A popular stock like Apple has hundreds of trades every second.
@@ -628,7 +632,7 @@ Three of the four only appear **after** it is live — which is exactly why ship
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:05 — TOTAL 8:10]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:05 — TOTAL 8:15]</span>
 It'd be a disservice to show you only the parts that went well. Four real problems, each caught a different way.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO TOP-LEFT]</span>
@@ -691,7 +695,7 @@ It can read everything and suggest a change. It cannot make one.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 8:50]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 8:55]</span>
 This is what came out the other end.
 
 About eleven thousand lines of code. Two hundred and ninety-one automated tests — small programs that check the software still works every time anything changes. And it costs about three dollars a month to keep running.
@@ -717,7 +721,7 @@ Rather than describe it any further — let me just show you.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:45 — TOTAL 10:35]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:50 — TOTAL 10:45]</span>
 <span style="color:#c1121f;font-weight:700">[BEFORE THE TALK: LOG IN TO ticker-dash.fly.dev IN ANOTHER TAB OF THIS SAME BROWSER. IF THIS FRAME SHOWS THE PASSPHRASE GATE, CLICK THE GOLD "OPEN LIVE DEMO" BUTTON, BOTTOM RIGHT, AND DEMO IN A REAL TAB.]</span>
 
 <span style="color:#c1121f;font-weight:700">[SHOW APP]</span>
@@ -821,7 +825,7 @@ show(fig)
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 11:35]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 11:45]</span>
 <span style="color:#c1121f;font-weight:700">[CALL BACK TO SLIDE 5 — THIS IS THE PAYOFF. DO NOT RUSH IT.]</span>
 
 Remember the two working weeks the plan asked for?
@@ -892,7 +896,7 @@ But time is only one column of this. Here's the whole thing side by side.
 [Left column: the project's own written estimate, made before the build. Right column: measured from the finished project. The bottom three rows are qualitative comparisons, not measurements.]{.source}
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:55 — TOTAL 12:30]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:55 — TOTAL 12:40]</span>
 <span style="color:#c1121f;font-weight:700">[DO NOT READ EVERY ROW ALOUD — WALK DOWN THE RIGHT-HAND COLUMN AND LET THEM READ THE REST]</span>
 
 Same application, two ways of getting there. Grey is how this would normally go; gold is what actually happened.
@@ -911,7 +915,7 @@ What changed is that you no longer have to have mastered all eighteen before you
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE "FINDING THE BUGS" ROW]</span>
 
-And I've deliberately left this row identical on both sides, because it is. Finding problems is still the real work.
+And I've left this row the same on both sides on purpose, because it is. Finding problems is still the real work.
 
 <span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
 
@@ -988,7 +992,7 @@ show(fig)
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 13:20]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 13:30]</span>
 I'll be careful here, because I don't know what an engineering day is worth to you.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO CHART]</span>
@@ -1041,14 +1045,14 @@ Change the project, re-render, and these slides change with it.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:35 — TOTAL 13:55]</span>
-One more thing, and it's slightly recursive. This presentation was built the same way.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:30 — TOTAL 14:00]</span>
+One more thing. This presentation was built the same way.
 
 <span style="color:#c1121f;font-weight:700">[POINT ALONG THE THREE STEPS]</span>
 
 The same tool read the project — the history, the plan, the numbers — and generated these charts as code, straight from that data.
 
-Then the same discipline as before: anything I couldn't trace back to a real file came out. There was a first draft of that cost slide with an invented salary in it. That's why you got buttons you can set yourself instead.
+Then the same discipline: anything I couldn't trace back to a real file came out. The first draft of that cost slide had an invented salary in it — which is why you got buttons instead.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO "HALF A DAY"]</span>
 
@@ -1069,14 +1073,14 @@ The distance between having an idea and having a working thing just got dramatic
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 14:45]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 14:45]</span>
 <span style="color:#c1121f;font-weight:700">[SLOW DOWN. THIS IS THE CLOSE — LET EACH LINE BREATHE.]</span>
 
 So what do I take from all of this?
 
 <span style="color:#c1121f;font-weight:700">[POINT TO EACH LINE AS YOU SAY IT]</span>
 
-A prototype now costs hours rather than a release cycle. Which means "let's just try it and see" becomes a reasonable thing to say, instead of something we say and then quietly never do.
+A prototype now costs hours rather than a release cycle. Which means "let's just try it" becomes a reasonable thing to say, instead of something we say and quietly never do.
 
 You can build across technologies you haven't mastered. You still need to know what good looks like — you just don't need years in each one first.
 
