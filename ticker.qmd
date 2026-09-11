@@ -143,7 +143,7 @@ Ticker
 :::
 
 ::: {.title-lead}
-A live stock dashboard: prices straight from the market, a record of everything I've bought and sold, and an AI assistant built in.
+A live stock dashboard: prices straight from the market, a portfolio worked out from a ledger of trades, and an AI assistant built in.
 
 **I didn't write the code. What I want to show you is what that changes.**
 :::
@@ -157,14 +157,16 @@ ticker-dash.fly.dev
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 0:45]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 0:50]</span>
 Good morning.
 
-Over the last few weeks I built a working application. It's called Ticker, and it's a live stock dashboard.
+Over the last few weeks I built a working application. It's called Ticker — a live stock dashboard.
 
-So — it pulls share prices straight from the stock market, as they change. It keeps a record of everything I've bought and sold, and works that out into what I've actually made or lost. And there's an AI assistant built into it that can answer questions about any of it.
+It pulls share prices straight from the market as they change. You enter what you've bought and sold, and it works out what those holdings are worth now, and what they've made or lost. There's also an AI assistant built in that can answer questions about it.
 
-It's running on the internet right now.
+One thing up front: the portfolio you'll see is made up. The prices are real and the maths is real — the holdings are a test set.
+
+And it's running on the internet right now.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE]</span>
 
@@ -190,7 +192,7 @@ What can one person actually build now, if an AI writes the code?
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 1:30]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 1:35]</span>
 Let me set this up properly, because it shapes how you should read everything that follows.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE QUESTION]</span>
@@ -223,14 +225,14 @@ So — let me show you what I decided to build.
 Live, as trades happen. Not a page I have to keep refreshing.
 :::
 ::: {.card}
-[Two]{.tag}[Know what I actually made]{.h4}
+[Two]{.tag}[Know what it made]{.h4}
 
-Real profit and loss, worked out properly from everything I've ever bought and sold.
+Profit and loss worked out properly, from every buy and sell in the record.
 :::
 ::: {.card}
 [Three]{.tag}[Just ask it questions]{.h4}
 
-In plain English. "How am I doing?" — and get an answer grounded in my real numbers.
+In plain English. "How am I doing?" — and get an answer grounded in the actual numbers.
 :::
 :::
 
@@ -241,12 +243,12 @@ Three ordinary-sounding asks. Three completely different engineering problems.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 2:10]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 2:20]</span>
 The idea itself is not exciting, and that's on purpose. One screen, three things.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO EACH CARD IN TURN — DON'T READ THEM OUT]</span>
 
-Watch prices move as they actually happen. Know exactly what I'd made or lost — the real number, not a rough one. And be able to just ask it questions, in normal language.
+Watch prices move as they actually happen. Know exactly what a set of holdings had made or lost — the real number, not a rough one. And be able to just ask it questions, in normal language.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE]</span>
 
@@ -278,14 +280,14 @@ In most organisations, that list isn't one person. It's a team.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 2:55]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 3:05]</span>
 This is why.
 
 <span style="color:#c1121f;font-weight:700">[GESTURE ACROSS THE WHOLE GRID — DO NOT READ THE ITEMS OUT]</span>
 
 Eighteen separate skills go into that one screen.
 
-I won't read them out. But look at the range. Keeping a live connection open to the stock market. Designing a database. The accounting method for working out gains properly. Logins, so that nobody but me can see my portfolio. Renting a server, getting the app onto it, and keeping it running when I'm not looking. Visual design. Testing.
+I won't read them out. But look at the range. Keeping a live connection open to the stock market. Designing a database. The accounting method for working out gains properly. Logins, so that not just anyone can open it. Renting a server, getting the app onto it, and keeping it running when I'm not looking. Visual design. Testing.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE, THEN SLOW DOWN]</span>
 
@@ -296,6 +298,16 @@ In most organisations, that isn't one person. That's a back-end engineer, a fron
 <span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
 
 So if you handed this to a team — what would they schedule it at?
+
+<span style="color:#c1121f;font-weight:700">[IF ASKED WHAT A CHIP MEANS — DO NOT READ ALOUD:]</span>
+
+<span style="color:#c1121f;font-weight:700">[SECRETS HANDLING = THE PASSWORDS THE APP USES TO TALK TO THE PRICE PROVIDERS AND THE AI. THEY CANNOT SIT IN THE CODE, OR ANYONE WHO READS IT COULD RUN UP BILLS ON MY ACCOUNT. THEY LIVE ON THE SERVER SEPARATELY, AND I SET THEM BY HAND.]</span>
+
+<span style="color:#c1121f;font-weight:700">[CONTAINERS = THE APP PACKED UP WITH EVERYTHING IT NEEDS TO RUN — THE RIGHT VERSIONS OF EVERYTHING — SO IT BEHAVES IDENTICALLY ON MY LAPTOP AND ON THE RENTED SERVER. IT IS WHAT STOPS "IT WORKED ON MY MACHINE".]</span>
+
+<span style="color:#c1121f;font-weight:700">[FIFO LOT ACCOUNTING = IF YOU BOUGHT THE SAME SHARE THREE TIMES AND SELL SOME, WHICH ONES COUNT AS SOLD? OLDEST FIRST. IT CHANGES THE PROFIT FIGURE, AND IT IS HOW TAX REPORTING WORKS.]</span>
+
+<span style="color:#c1121f;font-weight:700">[CLIENT STATE = REMEMBERING WHAT THE PAGE IS SHOWING YOU WITHOUT ASKING THE SERVER AGAIN EVERY TIME.]</span>
 :::
 
 ## The plan said two working weeks
@@ -353,7 +365,7 @@ show(fig)
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 3:45]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 3:55]</span>
 This is the honest answer, and I want to be careful about where the number comes from.
 
 Before any code existed, this project had a written specification. The work was broken into seven phases, and each was sized in developer-days — the ordinary way any team estimates work.
@@ -412,7 +424,7 @@ So that's the traditional picture. Here's how I actually went at it.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 4:45]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 4:55]</span>
 This is the slide I'd most like you to remember.
 
 Nobody opened a chat window and asked for a stock dashboard. The first thing made wasn't code — it was a plan. A thousand lines of ordinary English: what it should do, how it should behave when things go wrong, and what "finished" meant.
@@ -467,7 +479,7 @@ Seven phases. Twenty-one trips round the loop.
 [Small pieces meant every mistake stayed small. And shipping took minutes rather than a release cycle — so problems showed up while the work was still fresh.]{.caption}
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 5:35]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 5:45]</span>
 Five steps, and it really is this simple.
 
 <span style="color:#c1121f;font-weight:700">[TRACE THE DIAGRAM LEFT TO RIGHT AS YOU TALK]</span>
@@ -559,7 +571,7 @@ show(fig)
 [Illustrative of the ratio described in the project's guide, not a recording of real trades.]{.caption}
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:35 — TOTAL 7:10]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:35 — TOTAL 7:20]</span>
 This is the moment that surprised me most.
 
 A popular stock like Apple has hundreds of trades every second.
@@ -632,7 +644,7 @@ Three of the four only appear **after** it is live — which is exactly why ship
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:05 — TOTAL 8:15]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:05 — TOTAL 8:25]</span>
 It'd be a disservice to show you only the parts that went well. Four real problems, each caught a different way.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO TOP-LEFT]</span>
@@ -695,7 +707,7 @@ It can read everything and suggest a change. It cannot make one.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 8:55]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 9:05]</span>
 This is what came out the other end.
 
 About eleven thousand lines of code. Two hundred and ninety-one automated tests — small programs that check the software still works every time anything changes. And it costs about three dollars a month to keep running.
@@ -721,7 +733,7 @@ Rather than describe it any further — let me just show you.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:50 — TOTAL 10:45]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:40 — TOTAL 10:45]</span>
 <span style="color:#c1121f;font-weight:700">[BEFORE THE TALK: LOG IN TO ticker-dash.fly.dev IN ANOTHER TAB OF THIS SAME BROWSER. IF THIS FRAME SHOWS THE PASSPHRASE GATE, CLICK THE GOLD "OPEN LIVE DEMO" BUTTON, BOTTOM RIGHT, AND DEMO IN A REAL TAB.]</span>
 
 <span style="color:#c1121f;font-weight:700">[SHOW APP]</span>
@@ -746,11 +758,11 @@ Now the analyst.
 
 <span style="color:#c1121f;font-weight:700">[WAIT FOR THE ANSWER TO STREAM IN — ABOUT 5 SECONDS. DON'T TALK OVER IT.]</span>
 
-It's reading my actual holdings — the same real numbers on the screen.
+It's reading the actual holdings in the ledger — the same numbers on the screen.
 
 <span style="color:#c1121f;font-weight:700">[DEMO — NOW TYPE: "Add 10 shares of NVDA" AND SEND. WAIT FOR THE CONFIRM CARD.]</span>
 
-And now I'll ask it to change my portfolio.
+And now I'll ask it to change the portfolio.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE CONFIRM CARD. DO NOT CLICK CONFIRM.]</span>
 
@@ -1139,6 +1151,8 @@ Everything's up there — the app is live, the code is public, and these slides 
 <span style="color:#c1121f;font-weight:700">[IF ASKED ABOUT CODE QUALITY → 291 TESTS, AUTOMATED CHECKS ON EVERY CHANGE, AND A READ-THROUGH BEFORE ANYTHING SHIPPED. THEN POINT AT THE LEAK THE TESTS MISSED.]</span>
 
 <span style="color:#c1121f;font-weight:700">[IF ASKED WHAT IT COST → ONE MONTHLY SUBSCRIPTION I PAY ANYWAY, PLUS ABOUT $3/MONTH TO HOST.]</span>
+
+<span style="color:#c1121f;font-weight:700">[IF ASKED "IS THAT YOUR REAL PORTFOLIO?" → NO. THE HOLDINGS ARE A TEST SET. THE PRICES ARE LIVE AND THE ACCOUNTING IS THE REAL THING — THE POSITIONS ARE MADE UP.]</span>
 
 <span style="color:#c1121f;font-weight:700">[IF PUSHED ON THE 9x → THE MEASURED SIDE IS THE CONSERVATIVE END AND ROUNDED DOWN. THE ESTIMATE PREDATES THE BUILD AND WAS NEVER REVISED.]</span>
 
