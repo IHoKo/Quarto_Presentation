@@ -15,7 +15,7 @@ format:
     preview-links: false
     highlight-style: github-dark
     html-math-method: plain
-    footer: "Ticker · one person · nine hours · ticker-dash.fly.dev"
+    footer: "Ticker · a side project · ticker-dash.fly.dev"
     include-in-header: theme/plotly-head.html
     include-after-body: theme/reveal-fixes.js
     mermaid:
@@ -136,16 +136,16 @@ def menu_style(**kw):
 ##  {#title .center}
 
 ::: {style="max-width:27em"}
-[What AI-assisted development actually looks like · September 2026]{.kicker}
+[A side project, and what it taught me · September 2026]{.kicker}
 
 ::: {style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:4.6em;line-height:0.95;letter-spacing:-0.04em;margin:0.1em 0 0 0"}
 Ticker
 :::
 
 ::: {.title-lead}
-A live stock dashboard, built by one person.
+A live stock dashboard I built in my own time — with an AI writing the code.
 
-**From a written idea to a tested application running on the internet — in nine hours.**
+**What I want to show you is how that changed the work.**
 :::
 
 ::: {style="margin-top:1.2em;font-family:'IBM Plex Mono',monospace;font-size:0.44em;letter-spacing:0.14em;text-transform:uppercase;color:#8b929c"}
@@ -157,24 +157,58 @@ ticker-dash.fly.dev
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 0:45]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:35 — TOTAL 0:35]</span>
+I put my hand up for this one, because I think what I learned is worth passing on.
 
-I put my hand up for this one, because I think what I learned is worth passing on. It's a side project — built entirely in my own time.
+Over the last few weeks, in my own time, I built a real working application. It's called Ticker. It's a live stock dashboard, and it's running on the internet right now.
 
-Let me start with a question. How much working software do you think one person can build in about a day of effort?
+<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
 
-<span style="color:#c1121f;font-weight:700">[PAUSE — LET THEM ANSWER IT IN THEIR HEAD]</span>
+But the app isn't really the point.
 
-Not a mock-up. A real application — live data, a database, a proper interface, deployed and running right now.
+<span style="color:#c1121f;font-weight:700">[SLOW DOWN — THIS IS THE SENTENCE THAT TELLS THEM WHAT THE TALK IS]</span>
 
-A couple of years ago my answer would have been: very little.
-
-So I ran the experiment on myself. This is Ticker. Nine hours of hands-on work, from a written description to a tested application anyone can open in a browser.
-
-I'll show you what it does, and then exactly how it got built.
+The point is *how* it got built. I didn't write most of the code — an AI did. What I want to show you is what that changes about the work.
 :::
 
-## What I wanted
+## What I was trying to find out
+
+[One experiment, in my own time]{.kicker}
+
+::: {.pull style="margin-top:0.3em"}
+What can one person actually build now, if an AI writes the code?
+:::
+
+::: {.takeaways style="margin-top:1.1em;max-width:36em"}
+[I don't build software for a **living**.]{.take}
+[So I picked something **real** — not a tutorial project.]{.take}
+[Evenings and weekends. The AI wrote the code; I decided **what it should be**.]{.take}
+:::
+
+::: {.notes}
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 1:25]</span>
+Let me set this up properly, because it shapes how you should read everything that follows.
+
+<span style="color:#c1121f;font-weight:700">[POINT TO THE QUESTION]</span>
+
+That's what I actually wanted to find out. What can one person build now, if an AI is doing the coding?
+
+<span style="color:#c1121f;font-weight:700">[POINT TO THE THREE LINES]</span>
+
+Three things worth knowing before we start.
+
+I don't build software for a living. That's not modesty — it's the whole reason this is an interesting question to ask.
+
+I deliberately didn't pick a tutorial project. I picked something real, with real complications, that I'd actually want to use.
+
+And all of it happened in evenings and weekends. The AI wrote the code. I decided what it should be, and whether what came back was any good.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
+
+So — let me show you what I decided to build.
+:::
+
+## What I wanted to build
 
 [One screen · three things]{.kicker}
 
@@ -203,133 +237,24 @@ Three ordinary-sounding asks. Three completely different engineering problems.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 1:25]</span>
-
-The idea was deliberately unglamorous. One screen, three things.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 2:05]</span>
+The idea itself is deliberately unglamorous. One screen, three things.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO EACH CARD IN TURN — DON'T READ THEM OUT]</span>
 
-Watch prices move as they actually happen. Know exactly what I'd made or lost — the real number, not a rough one. And be able to just ask it things, in normal language.
+Watch prices move as they actually happen. Know exactly what I'd made or lost — the real number, not a rough one. And be able to just ask it questions, in normal language.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE]</span>
 
-Anyone could write those three sentences on the back of an envelope in a minute.
+Anyone in this room could write those three sentences in about a minute.
 
 <span style="color:#c1121f;font-weight:700">[SLOW DOWN]</span>
 
-But each one is a completely different engineering problem underneath. Live data is one discipline. Financial accounting is another. A safe AI assistant is a third.
+But underneath, each one is a completely different problem. Live data is one discipline. Financial accounting is another. Building an AI assistant that's actually safe to use is a third.
 
-That gap — between how easy something is to describe and how hard it is to build — is what this talk is about.
-:::
+<span style="color:#c1121f;font-weight:700">[TRANSITION — ASK THIS AS A REAL QUESTION]</span>
 
-## What came out
-
-[One machine · three rented services · running right now]{.kicker}
-
-::: {.figrow}
-::: {}
-[~11,000]{.fig-n}[lines of code]{.fig-t}
-:::
-::: {}
-[291]{.fig-n}[automated tests]{.fig-t}
-:::
-::: {}
-[9]{.fig-n .brass}[hours of work]{.fig-t}
-:::
-::: {}
-[~$3]{.fig-n .brass}[a month to run]{.fig-t}
-:::
-:::
-
-::: {.cols .cols-3 style="margin-top:1.1em"}
-::: {.card}
-[Live]{.tag}[Prices that move]{.h4}
-
-One connection to the market, shared out to every browser that's open.
-:::
-::: {.card}
-[Correct]{.tag}[A real ledger]{.h4}
-
-Profit and loss calculated the same way your broker does it for tax.
-:::
-::: {.card}
-[Safe]{.tag}[An analyst that can't trade]{.h4}
-
-It can read everything and suggest a change. It cannot make one.
-:::
-:::
-
-::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 2:10]</span>
-
-This is what came out the other end.
-
-About eleven thousand lines of code. Two hundred and ninety-one automated tests — small programs that check the software still works every time anything changes. Nine hours of work. Three dollars a month to run.
-
-<span style="color:#c1121f;font-weight:700">[POINT TO THE THREE CARDS]</span>
-
-And it does all three things.
-
-Prices move live. The ledger is real — the same accounting method your broker uses to report your gains for tax.
-
-And the analyst can read your holdings, search the web, and suggest a change — but it physically cannot make one. It can only propose. You press Confirm.
-
-<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
-
-Let me just show you it running.
-:::
-
-##  {#live-demo background-iframe="https://ticker-dash.fly.dev/" background-interactive="true"}
-
-[Live · ticker-dash.fly.dev]{.demo-badge}
-
-::: {.demo-overlay}
-[If the frame is blank, the session cookie was blocked]{.hint}
-[Open live demo ↗](https://ticker-dash.fly.dev/){target="_blank" rel="noopener"}
-:::
-
-::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:50 — TOTAL 4:00]</span>
-
-<span style="color:#c1121f;font-weight:700">[BEFORE THE TALK: LOG IN TO ticker-dash.fly.dev IN ANOTHER TAB OF THIS SAME BROWSER. IF THIS FRAME SHOWS THE PASSPHRASE GATE, CLICK THE GOLD "OPEN LIVE DEMO" BUTTON, BOTTOM RIGHT, AND DEMO IN A REAL TAB.]</span>
-
-<span style="color:#c1121f;font-weight:700">[SHOW APP]</span>
-
-This is the actual application, running on a server right now. You could open it on your phone during this talk.
-
-<span style="color:#c1121f;font-weight:700">[POINT TO THE TICKER TAPE — DON'T CLICK YET]</span>
-
-Across the top is the ticker tape. When the market's open, those numbers flip as real trades happen. Each symbol updates on its own — one price change repaints one row, not the whole screen. That's the hardest problem in the app, and I'll come back to it.
-
-<span style="color:#c1121f;font-weight:700">[SCROLL DOWN TO THE POSITIONS TABLE]</span>
-
-Here's the portfolio. What I paid, what it's worth, whether I'm up or down.
-
-<span style="color:#c1121f;font-weight:700">[POINT TO ANY DASH, OR TO "MARKET CLOSED" IF WE ARE OUT OF HOURS]</span>
-
-And where a price isn't available it shows a dash, not a zero. A zero looks like a real number and quietly lies to you.
-
-<span style="color:#c1121f;font-weight:700">[DEMO — CLICK INTO THE ANALYST PANEL. TYPE: "How is my portfolio doing?" AND SEND.]</span>
-
-Now the analyst.
-
-<span style="color:#c1121f;font-weight:700">[WAIT FOR THE ANSWER TO STREAM IN — ABOUT 5 SECONDS. DON'T TALK OVER IT.]</span>
-
-It's reading my actual holdings — the same real numbers on the screen.
-
-<span style="color:#c1121f;font-weight:700">[DEMO — NOW TYPE: "Add 10 shares of NVDA" AND SEND. WAIT FOR THE CONFIRM CARD.]</span>
-
-Now I'll ask it to change my portfolio.
-
-<span style="color:#c1121f;font-weight:700">[POINT TO THE CONFIRM CARD. DO NOT CLICK CONFIRM.]</span>
-
-It didn't. It's produced a proposal and it's waiting for me. And that isn't politeness — that part of the system has no ability to write to the database at all. It can look; it cannot touch.
-
-<span style="color:#c1121f;font-weight:700">[CLICK DISMISS, THEN RETURN TO THE SLIDES]</span>
-
-<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
-
-So — how long should something like that take to build?
+Which raises the obvious question. If it's that easy to describe, why isn't it easy to build?
 :::
 
 ## Eighteen specialisms, one small app
@@ -349,21 +274,24 @@ In most organisations, that list isn't one person. It's a team.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 4:50]</span>
-
-Before we talk about speed, here's what "it" actually involves — and why software is usually slow.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 2:50]</span>
+This is why.
 
 <span style="color:#c1121f;font-weight:700">[GESTURE ACROSS THE WHOLE GRID — DO NOT READ THE ITEMS OUT]</span>
 
-Eighteen separate skills went into that one screen.
+Eighteen separate skills go into that one screen.
 
-I won't read them. But look at the range. Keeping a live connection open to the stock market. Designing a database. The accounting method for working out gains properly. Security. The machinery that gets it onto the internet and keeps it there. Visual design. Testing.
+I won't read them out. But look at the range. Keeping a live connection open to the stock market. Designing a database. The accounting method for working out gains properly. Security. The machinery that gets it onto the internet and keeps it there. Visual design. Testing.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE, THEN SLOW DOWN]</span>
 
 Now read that as a staffing question rather than a technical one.
 
-In most organisations that isn't one person. That's a back-end engineer, a front-end engineer, someone comfortable with data modelling, a designer, and somebody who owns deployment. Five or six specialisms — and five or six calendars.
+In most organisations, that isn't one person. That's a back-end engineer, a front-end engineer, someone comfortable with data modelling, a designer, and somebody who owns deployment.
+
+<span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
+
+So if you handed this to a team — what would they schedule it at?
 :::
 
 ## The plan said two working weeks
@@ -421,9 +349,8 @@ show(fig)
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:55 — TOTAL 5:45]</span>
-
-Here's where the numbers start, and I want to be careful about where they come from.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 3:40]</span>
+This is the honest answer, and I want to be careful about where the number comes from.
 
 Before any code existed, this project had a written specification. The work was broken into seven phases, and each was sized in developer-days — the ordinary way any team estimates work.
 
@@ -435,114 +362,15 @@ The important thing is the timing. That estimate is timestamped in the project, 
 
 Grouped by the kind of work: the engine room, everything you see, the data and the accounting, the AI, design, deployment, testing.
 
-<span style="color:#c1121f;font-weight:700">[POINT TO THE BIG NUMBER]</span>
+<span style="color:#c1121f;font-weight:700">[POINT TO THE BIG NUMBER — SAY IT SLOWLY, YOU COME BACK TO IT LATER]</span>
 
-Eight and a half to eleven and a half developer-days. Roughly two working weeks — spread across five or six specialisms.
+Eight and a half to eleven and a half developer-days. Call it two working weeks — spread across five or six specialisms.
 
-<span style="color:#c1121f;font-weight:700">[IF CHALLENGED ON THIS ESTIMATE — DO NOT READ ALOUD: THE PLAN WAS DRAFTED BY THE SAME TOOL THAT DID THE BUILD. SAY SO PLAINLY IF ASKED. THE SIZING IS CONVENTIONAL, IT IS IN THE REPOSITORY TO BE READ, AND THE AUDIENCE HAS JUST SEEN THE SCOPE. INVITE THEM TO SUBSTITUTE THEIR OWN NUMBER.]</span>
+<span style="color:#c1121f;font-weight:700">[IF CHALLENGED ON THIS ESTIMATE — DO NOT READ ALOUD: THE PLAN WAS DRAFTED BY THE SAME TOOL THAT DID THE BUILD. SAY SO PLAINLY IF ASKED. THE SIZING IS CONVENTIONAL, IT IS IN THE REPOSITORY TO BE READ, AND THEY HAVE JUST SEEN THE SCOPE. INVITE THEM TO SUBSTITUTE THEIR OWN NUMBER.]</span>
 
-So — what actually happened?
-:::
+<span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
 
-## It took nine hours
-
-[Same scope · same specification · measured after the build]{.kicker}
-
-::: {.split}
-::: {}
-```{python}
-#| label: time-comparison
-
-# Two bars, no axis, no legend, no gridlines. The comparison IS the chart;
-# anything else on it is competing with the only thing that matters.
-y = ["The plan", "What it took"]
-v = [PLAN_MID_H, ACTUAL_H]
-
-fig = go.Figure()
-fig.add_trace(go.Bar(
-    x=[PLAN_MID_H], y=[y[0]], orientation="h",
-    marker=dict(color=MUTED, line=dict(color=PAPER, width=1)),
-    error_x=dict(type="data", symmetric=False,
-                 array=[PLAN_HI_H - PLAN_MID_H],
-                 arrayminus=[PLAN_MID_H - PLAN_LO_H],
-                 color=INK, thickness=2, width=12),
-    hovertemplate="%{y}<br>%{x:.0f} hours<extra></extra>"))
-fig.add_trace(go.Bar(
-    x=[ACTUAL_H], y=[y[1]], orientation="h",
-    marker=dict(color=BRASS, line=dict(color=PAPER, width=1)),
-    hovertemplate="%{y}<br>%{x:.0f} hours<extra></extra>"))
-
-# Figures sit clear of the error bar rather than butting against it, which is
-# what `textposition="outside"` would do.
-for label, xpos, ypos, colour in (
-        (f"{PLAN_LO_H:.0f}–{PLAN_HI_H:.0f} hours", PLAN_HI_H + 6, y[0], INK),
-        (f"{ACTUAL_H:.0f} hours",                  ACTUAL_H + 6,  y[1], BRASS)):
-    fig.add_annotation(x=xpos, y=ypos, text=f"<b>{label}</b>", showarrow=False,
-                       xanchor="left", yanchor="middle",
-                       font=dict(family="Bricolage Grotesque", size=38, color=colour))
-
-fig.update_layout(
-    height=500, autosize=True, bargap=0.55, barmode="overlay",
-    xaxis=dict(visible=False, range=[0, 152]),
-    yaxis=dict(categoryorder="array", categoryarray=y[::-1],
-               showgrid=False, zeroline=False,
-               ticklabelstandoff=16,
-               tickfont=dict(family="Instrument Sans", size=26, color=INK)),
-    margin=dict(l=290, r=40, t=40, b=20))
-show(fig)
-```
-
-[The thin line on the grey bar is the estimate's own range. The nine hours counts only hands-on time — any gap over 45 minutes is excluded — and is rounded down.]{.caption}
-:::
-
-::: {}
-::: {style="padding-top:0.4em"}
-[Roughly]{.pre}
-[9×]{.hero}
-
-[**faster than the plan.** Around 89% less time — between eight and ten times, depending on which end of the estimate you take.]{.hero-note}
-:::
-:::
-:::
-
-::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:25 — TOTAL 7:10]</span>
-
-<span style="color:#c1121f;font-weight:700">[SLOW DOWN. THIS IS THE CENTREPIECE SLIDE. DON'T RUSH IT.]</span>
-
-<span style="color:#c1121f;font-weight:700">[POINT TO CHART — THE GREY BAR]</span>
-
-The grey bar is the plan. Sixty-eight to ninety-two hours.
-
-The gold bar is what it actually took.
-
-<span style="color:#c1121f;font-weight:700">[PAUSE — LET THEM SEE THE GAP BEFORE YOU SAY THE NUMBER]</span>
-
-Nine hours.
-
-<span style="color:#c1121f;font-weight:700">[POINT TO THE BIG NUMBER]</span>
-
-About nine times faster. Getting on for ninety percent less time.
-
-Now let me defend that, because a single figure with no working behind it is worth nothing.
-
-<span style="color:#c1121f;font-weight:700">[POINT TO THE THIN LINE ON THE GREY BAR]</span>
-
-The estimate is a range, so I've drawn the range rather than picking the flattering end. Depending where you land, it's between eight and ten times.
-
-And the nine hours is hands-on time only, reconstructed from the project's own history. If I stepped away for more than about three quarters of an hour, I stopped counting. Then I rounded down.
-
-<span style="color:#c1121f;font-weight:700">[EMPHASISE]</span>
-
-So if anything, the comparison is generous to the traditional side.
-
-<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
-
-And sit with this for a second. That isn't an expert engineer going nine times faster than themselves. It's one person, across eighteen specialisms most of which I had never shipped, ending up with a finished, deployed application anyway.
-
-<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
-
-So — how? Because it is not typing "build me a stock dashboard" and going for a coffee.
+So that's the traditional picture. Here's how I actually went at it.
 :::
 
 ## It started with a plan, not a prompt
@@ -580,8 +408,7 @@ So — how? Because it is not typing "build me a stock dashboard" and going for 
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:55 — TOTAL 8:05]</span>
-
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 4:40]</span>
 This is the slide I'd most like you to remember.
 
 Nobody opened a chat window and asked for a stock dashboard. The first thing made wasn't code — it was a plan. A thousand lines of ordinary English: what it should do, how it should behave when things go wrong, and what "finished" meant.
@@ -595,6 +422,10 @@ Writing a specification is normally the slow, dreaded part — the thing that st
 <span style="color:#c1121f;font-weight:700">[POINT TO THE QUOTE — YOU CAN READ THIS ONE OUT]</span>
 
 My favourite line in the project. Don't paste one giant "build the whole thing" prompt — you get a mountain of code that all fails at once, and can't tell which part is wrong.
+
+<span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
+
+So instead of one big ask, we settled into a rhythm.
 :::
 
 ## One phase at a time
@@ -632,9 +463,8 @@ Seven phases. Twenty-one trips round the loop.
 [Small pieces meant every mistake stayed small. And shipping took minutes rather than a release cycle — so problems showed up while the work was still fresh.]{.caption}
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:55 — TOTAL 9:00]</span>
-
-Here's the working rhythm. Five steps, and it really is this simple.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 5:30]</span>
+Five steps, and it really is this simple.
 
 <span style="color:#c1121f;font-weight:700">[TRACE THE DIAGRAM LEFT TO RIGHT AS YOU TALK]</span>
 
@@ -646,13 +476,11 @@ And straight round again. Seven planned phases, twenty-one trips round the circu
 
 <span style="color:#c1121f;font-weight:700">[SLOW DOWN — THIS IS THE VALUE POINT]</span>
 
-What matters here is the speed of that loop, not any single step in it.
+What matters is the speed of that loop, not any single step in it. Small pieces mean every mistake stays small. And because getting something in front of real data takes minutes rather than a release cycle, you find out you were wrong while the work is still fresh.
 
-Small pieces mean every mistake stays small. And because getting something in front of real data takes minutes rather than a release cycle, you find out you were wrong while the work is still fresh.
+<span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
 
-<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
-
-That's the real productivity story — not "the AI types quickly", but the whole cycle collapsing from weeks into an evening.
+Now — one trip round that loop taught me something I was not expecting at all.
 :::
 
 ## The problem I didn't know I had
@@ -727,9 +555,8 @@ show(fig)
 [Illustrative of the ratio described in the project's guide, not a recording of real trades.]{.caption}
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:25 — TOTAL 10:25]</span>
-
-This is the moment in the project that surprised me most.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:35 — TOTAL 7:05]</span>
+This is the moment that surprised me most.
 
 A popular stock like Apple has hundreds of trades every second.
 
@@ -737,7 +564,7 @@ A popular stock like Apple has hundreds of trades every second.
 
 That grey cloud is three seconds of it. Nine hundred price updates.
 
-Now — your screen only physically redraws about sixty times a second. And every one of those updates makes the browser recalculate and repaint the page, on the same single thread that handles your clicks. Three hundred a second is far more than it can get through, so the work piles up and the tab stops responding altogether.
+Now — your screen only physically redraws about sixty times a second. And every update makes the browser repaint the page, on the same thread that handles your clicks. Three hundred a second is far more than it can manage, so the work piles up and the tab stops responding.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE — THEN SAY THIS PLAINLY, IT IS THE POINT OF THE SLIDE]</span>
 
@@ -749,9 +576,9 @@ I asked for live prices. What came back was live prices *and* a fix for a proble
 
 That's the gold line. Keep only the newest price, and send it four times a second. Nine hundred in, twelve out — and your eye simply cannot tell.
 
-<span style="color:#c1121f;font-weight:700">[CLICK "every 100 ms"]</span> More often tracks the market closer, but quadruples the load on every browser.
+<span style="color:#c1121f;font-weight:700">[CLICK "every 100 ms"]</span> Four times more often — and four times the load on every browser.
 
-<span style="color:#c1121f;font-weight:700">[CLICK "every 1000 ms"]</span> Once a second is cheap — but you can see it lagging.
+<span style="color:#c1121f;font-weight:700">[CLICK "every 1000 ms"]</span> Once a second is cheap, but you can see it lagging.
 
 <span style="color:#c1121f;font-weight:700">[CLICK BACK TO "every 250 ms"]</span> A quarter of a second is what shipped.
 
@@ -759,7 +586,11 @@ That's the gold line. Keep only the newest price, and send it four times a secon
 
 On my own, I'd have wired the feed straight to the screen and watched it fall over on the first busy stock, with no idea why. Instead I got the version an experienced engineer would have built, first time.
 
-It isn't just that it types faster than you. It brings knowledge you don't have — and explains it well enough that you can check it.
+It isn't just that it types faster than you. It brings knowledge you don't have.
+
+<span style="color:#c1121f;font-weight:700">[TRANSITION — SET UP THE HONEST COUNTERWEIGHT]</span>
+
+That said, it is not magic. Plenty still went wrong.
 :::
 
 ## Four ways a bug turned up
@@ -797,9 +628,8 @@ Three of the four only appear **after** it is live — which is exactly why ship
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 11:25]</span>
-
-It'd be a disservice to show only the parts that went well. Four real problems, each caught a different way.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:05 — TOTAL 8:10]</span>
+It'd be a disservice to show you only the parts that went well. Four real problems, each caught a different way.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO TOP-LEFT]</span>
 
@@ -807,15 +637,11 @@ The cheap one — the automated tests. Two hundred and ninety-one, running on ev
 
 <span style="color:#c1121f;font-weight:700">[POINT TO TOP-RIGHT]</span>
 
-The second is more interesting. Something was quietly growing and never cleaning up after itself. Every test passed — tests check that answers are correct, not that something is slowly eating the machine. It took reading the code to catch that.
+The second is more interesting. Something was quietly growing and never cleaning up after itself. Every test passed — tests check that answers are correct, not that something's slowly eating the machine. It took reading the code to catch that.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO BOTTOM-LEFT]</span>
 
-The third only appeared in the real world: the free data plan didn't include historical prices. You can't discover that on a laptop.
-
-<span style="color:#c1121f;font-weight:700">[EMPHASISE — IT'S THE GOOD BIT]</span>
-
-And the fix was a second supplier rather than paying to upgrade — one file, because of a structural decision made days earlier.
+The third only appeared in the real world: the free data plan didn't include historical prices. You can't discover that on a laptop. And the fix was a second supplier rather than paying to upgrade — one file, because of a structural decision made days earlier.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO BOTTOM-RIGHT]</span>
 
@@ -823,7 +649,212 @@ The fourth: a chart that simply didn't draw. It took someone looking at the scre
 
 <span style="color:#c1121f;font-weight:700">[PAUSE]</span>
 
-Three of those four only turned up after it was live. Which is why the speed of that loop matters — you find out almost immediately, and fixing it is a correction, not a project.
+Three of those four only turned up after it was live. Which is exactly why the speed of that loop matters.
+
+<span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
+
+So — after all of that, what did I actually end up with?
+:::
+
+## What I ended up with
+
+[One machine · three rented services · running right now]{.kicker}
+
+::: {.figrow .n-3}
+::: {}
+[~11,000]{.fig-n}[lines of code]{.fig-t}
+:::
+::: {}
+[291]{.fig-n}[automated tests]{.fig-t}
+:::
+::: {}
+[~$3]{.fig-n .brass}[a month to run]{.fig-t}
+:::
+:::
+
+::: {.cols .cols-3 style="margin-top:1.1em"}
+::: {.card}
+[Live]{.tag}[Prices that move]{.h4}
+
+One connection to the market, shared out to every browser that's open.
+:::
+::: {.card}
+[Correct]{.tag}[A real ledger]{.h4}
+
+Profit and loss calculated the same way your broker does it for tax.
+:::
+::: {.card}
+[Safe]{.tag}[An analyst that can't trade]{.h4}
+
+It can read everything and suggest a change. It cannot make one.
+:::
+:::
+
+::: {.notes}
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:40 — TOTAL 8:50]</span>
+This is what came out the other end.
+
+About eleven thousand lines of code. Two hundred and ninety-one automated tests — small programs that check the software still works every time anything changes. And it costs about three dollars a month to keep running.
+
+<span style="color:#c1121f;font-weight:700">[POINT TO THE THREE CARDS]</span>
+
+And it does all three things I asked for at the start.
+
+Prices move live. The ledger is real — the same accounting method your broker uses to report your gains for tax. And the analyst can read your holdings and suggest a change, but physically cannot make one. You press Confirm.
+
+<span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
+
+Rather than describe it any further — let me just show you.
+:::
+
+##  {#live-demo background-iframe="https://ticker-dash.fly.dev/" background-interactive="true"}
+
+[Live · ticker-dash.fly.dev]{.demo-badge}
+
+::: {.demo-overlay}
+[If the frame is blank, the session cookie was blocked]{.hint}
+[Open live demo ↗](https://ticker-dash.fly.dev/){target="_blank" rel="noopener"}
+:::
+
+::: {.notes}
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:45 — TOTAL 10:35]</span>
+<span style="color:#c1121f;font-weight:700">[BEFORE THE TALK: LOG IN TO ticker-dash.fly.dev IN ANOTHER TAB OF THIS SAME BROWSER. IF THIS FRAME SHOWS THE PASSPHRASE GATE, CLICK THE GOLD "OPEN LIVE DEMO" BUTTON, BOTTOM RIGHT, AND DEMO IN A REAL TAB.]</span>
+
+<span style="color:#c1121f;font-weight:700">[SHOW APP]</span>
+
+This is the actual application, running on a server right now. You could open it on your phone while I'm talking.
+
+<span style="color:#c1121f;font-weight:700">[POINT TO THE TICKER TAPE — DON'T CLICK YET]</span>
+
+Across the top is the ticker tape. When the market's open, those numbers flip as real trades happen — and that's the problem we were just looking at, working.
+
+<span style="color:#c1121f;font-weight:700">[SCROLL DOWN TO THE POSITIONS TABLE]</span>
+
+Here's the portfolio. What I paid, what it's worth, whether I'm up or down.
+
+<span style="color:#c1121f;font-weight:700">[POINT TO ANY DASH, OR TO "MARKET CLOSED" IF WE ARE OUT OF HOURS]</span>
+
+And where a price isn't available it shows a dash, not a zero. A zero looks like a real number and quietly lies to you.
+
+<span style="color:#c1121f;font-weight:700">[DEMO — CLICK INTO THE ANALYST PANEL. TYPE: "How is my portfolio doing?" AND SEND.]</span>
+
+Now the analyst.
+
+<span style="color:#c1121f;font-weight:700">[WAIT FOR THE ANSWER TO STREAM IN — ABOUT 5 SECONDS. DON'T TALK OVER IT.]</span>
+
+It's reading my actual holdings — the same real numbers on the screen.
+
+<span style="color:#c1121f;font-weight:700">[DEMO — NOW TYPE: "Add 10 shares of NVDA" AND SEND. WAIT FOR THE CONFIRM CARD.]</span>
+
+And now I'll ask it to change my portfolio.
+
+<span style="color:#c1121f;font-weight:700">[POINT TO THE CONFIRM CARD. DO NOT CLICK CONFIRM.]</span>
+
+It didn't. It's produced a proposal and it's waiting for me. That isn't politeness — that part of the system has no ability to write to the database at all. It can look; it cannot touch.
+
+<span style="color:#c1121f;font-weight:700">[CLICK DISMISS, THEN RETURN TO THE SLIDES]</span>
+
+<span style="color:#c1121f;font-weight:700">[TRANSITION — THIS SETS UP THE PAYOFF]</span>
+
+So that's the thing. Now the question you've been waiting for: how long did it take?
+:::
+
+## It took nine hours
+
+[Same scope · same specification · measured after the build]{.kicker}
+
+::: {.split}
+::: {}
+```{python}
+#| label: time-comparison
+
+# Two bars, no axis, no legend, no gridlines. The comparison IS the chart;
+# anything else on it is competing with the only thing that matters.
+y = ["The plan", "What it took"]
+v = [PLAN_MID_H, ACTUAL_H]
+
+fig = go.Figure()
+fig.add_trace(go.Bar(
+    x=[PLAN_MID_H], y=[y[0]], orientation="h",
+    marker=dict(color=MUTED, line=dict(color=PAPER, width=1)),
+    error_x=dict(type="data", symmetric=False,
+                 array=[PLAN_HI_H - PLAN_MID_H],
+                 arrayminus=[PLAN_MID_H - PLAN_LO_H],
+                 color=INK, thickness=2, width=12),
+    hovertemplate="%{y}<br>%{x:.0f} hours<extra></extra>"))
+fig.add_trace(go.Bar(
+    x=[ACTUAL_H], y=[y[1]], orientation="h",
+    marker=dict(color=BRASS, line=dict(color=PAPER, width=1)),
+    hovertemplate="%{y}<br>%{x:.0f} hours<extra></extra>"))
+
+# Figures sit clear of the error bar rather than butting against it, which is
+# what `textposition="outside"` would do.
+for label, xpos, ypos, colour in (
+        (f"{PLAN_LO_H:.0f}–{PLAN_HI_H:.0f} hours", PLAN_HI_H + 6, y[0], INK),
+        (f"{ACTUAL_H:.0f} hours",                  ACTUAL_H + 6,  y[1], BRASS)):
+    fig.add_annotation(x=xpos, y=ypos, text=f"<b>{label}</b>", showarrow=False,
+                       xanchor="left", yanchor="middle",
+                       font=dict(family="Bricolage Grotesque", size=38, color=colour))
+
+fig.update_layout(
+    height=500, autosize=True, bargap=0.55, barmode="overlay",
+    xaxis=dict(visible=False, range=[0, 152]),
+    yaxis=dict(categoryorder="array", categoryarray=y[::-1],
+               showgrid=False, zeroline=False,
+               ticklabelstandoff=16,
+               tickfont=dict(family="Instrument Sans", size=26, color=INK)),
+    margin=dict(l=290, r=40, t=40, b=20))
+show(fig)
+```
+
+[The thin line on the grey bar is the estimate's own range. The nine hours counts only hands-on time — any gap over 45 minutes is excluded — and is rounded down.]{.caption}
+:::
+
+::: {}
+::: {style="padding-top:0.4em"}
+[Roughly]{.pre}
+[9×]{.hero}
+
+[**faster than the plan.** Around 89% less time — between eight and ten times, depending on which end of the estimate you take.]{.hero-note}
+:::
+:::
+:::
+
+::: {.notes}
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 11:35]</span>
+<span style="color:#c1121f;font-weight:700">[CALL BACK TO SLIDE 5 — THIS IS THE PAYOFF. DO NOT RUSH IT.]</span>
+
+Remember the two working weeks the plan asked for?
+
+<span style="color:#c1121f;font-weight:700">[POINT TO CHART — THE GREY BAR]</span>
+
+That's the grey bar. Sixty-eight to ninety-two hours.
+
+The gold bar is what it actually took.
+
+<span style="color:#c1121f;font-weight:700">[PAUSE — LET THEM SEE THE GAP BEFORE YOU SAY THE NUMBER]</span>
+
+Nine hours.
+
+<span style="color:#c1121f;font-weight:700">[POINT TO THE BIG NUMBER]</span>
+
+About nine times faster. Getting on for ninety percent less time.
+
+Now let me defend that, because a single figure with no working behind it is worth nothing.
+
+<span style="color:#c1121f;font-weight:700">[POINT TO THE THIN LINE ON THE GREY BAR]</span>
+
+The estimate is a range, so I've drawn the range rather than picking the flattering end. Depending where you land, it's between eight and ten times.
+
+And the nine hours is hands-on time only, reconstructed from the project's own history. If I stepped away for more than about three quarters of an hour, I stopped counting. Then I rounded down.
+
+<span style="color:#c1121f;font-weight:700">[EMPHASISE]</span>
+
+So if anything, the comparison is generous to the traditional side.
+
+<span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
+
+But time is only one column of this. Here's the whole thing side by side.
 :::
 
 ## Side by side
@@ -861,23 +892,18 @@ Three of those four only turned up after it was live. Which is why the speed of 
 [Left column: the project's own written estimate, made before the build. Right column: measured from the finished project. The bottom three rows are qualitative comparisons, not measurements.]{.source}
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:15 — TOTAL 12:40]</span>
-
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:55 — TOTAL 12:30]</span>
 <span style="color:#c1121f;font-weight:700">[DO NOT READ EVERY ROW ALOUD — WALK DOWN THE RIGHT-HAND COLUMN AND LET THEM READ THE REST]</span>
 
-The whole thing in one place. Same application, two ways of getting there. Grey is how this would normally go; gold is what happened.
-
-<span style="color:#c1121f;font-weight:700">[POINT TO THE TIME ROW]</span>
-
-Time we've covered. Sixty-eight to ninety-two hours against nine.
+Same application, two ways of getting there. Grey is how this would normally go; gold is what actually happened.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE PEOPLE ROW]</span>
 
-People. Five or six specialisms — and that's not just headcount, it's five or six calendars that have to line up.
+People. Five or six specialisms — and that isn't just headcount, it's five or six calendars that have to line up.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE TECHNOLOGIES ROW — SLOW DOWN, THIS IS THE MOST IMPORTANT ROW]</span>
 
-This row is the one I find most interesting, and it's easy to misread.
+This row is the one I find most interesting, and it's the easiest to misread.
 
 The number of technologies didn't go down. It's still eighteen. The app is exactly as complicated as it always was.
 
@@ -885,13 +911,11 @@ What changed is that you no longer have to have mastered all eighteen before you
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE "FINDING THE BUGS" ROW]</span>
 
-And I've deliberately left this row identical on both sides, because it is.
+And I've deliberately left this row identical on both sides, because it is. Finding problems is still the real work.
 
-Finding problems is still the real work. Generating code got faster; checking whether it's right did not. Anyone who tells you otherwise is selling something.
+<span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
 
-<span style="color:#c1121f;font-weight:700">[PAUSE]</span>
-
-And cost — which is worth its own slide.
+Which leaves the last row — cost.
 :::
 
 ## What it cost
@@ -964,25 +988,24 @@ show(fig)
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 13:30]</span>
-
-I'll be careful here too, because I don't know your loaded day rate.
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 13:20]</span>
+I'll be careful here, because I don't know what an engineering day is worth to you.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO CHART]</span>
 
-This takes the plan's own estimate and multiplies it by a rate. At six hundred a day, ten developer-days is around six thousand dollars of engineering time.
+So this just takes the plan's own estimate and multiplies it by a rate. At six hundred a day, ten developer-days is around six thousand dollars of engineering time.
 
 <span style="color:#c1121f;font-weight:700">[CLICK THROUGH THE RATE BUTTONS: $400, THEN $800, THEN BACK TO $600]</span>
 
-Slide it to whatever's realistic for you. The exact figure doesn't matter — the order of magnitude does.
+Slide it to whatever's realistic. The order of magnitude is the point, not the figure.
 
 <span style="color:#c1121f;font-weight:700">[TURN TO THE RIGHT-HAND SIDE]</span>
 
-Against that: about three dollars a month to host. That's an actual invoice. Nothing for the market data. With the AI usage on top, under ten dollars a month all in.
+Against that: about three dollars a month to host it. Nothing for the market data. Under ten dollars a month, all in.
 
-<span style="color:#c1121f;font-weight:700">[PAUSE, THEN SLOW DOWN — THIS IS THE EXECUTIVE TAKEAWAY]</span>
+<span style="color:#c1121f;font-weight:700">[PAUSE, THEN SLOW DOWN — THIS IS THE ONE THEY REPEAT AFTERWARDS]</span>
 
-And this is what actually matters for an organisation. It isn't that engineering got cheaper. It's that the cost of *trying something* collapsed.
+And this is what actually matters. It isn't that engineering got cheaper. It's that the cost of *trying something* collapsed.
 
 An idea that isn't worth two weeks of a team's time — and most aren't — might well be worth an afternoon.
 :::
@@ -1018,15 +1041,14 @@ Change the project, re-render, and these slides change with it.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:30 — TOTAL 14:00]</span>
-
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:35 — TOTAL 13:55]</span>
 One more thing, and it's slightly recursive. This presentation was built the same way.
 
 <span style="color:#c1121f;font-weight:700">[POINT ALONG THE THREE STEPS]</span>
 
-The same tool read the project — the history, the plan, the numbers — and generated these charts as code, from that data.
+The same tool read the project — the history, the plan, the numbers — and generated these charts as code, straight from that data.
 
-Then the same discipline: anything I couldn't trace back to a real file came out. There was a first draft of that cost slide with an invented salary in it. That's why you got buttons instead.
+Then the same discipline as before: anything I couldn't trace back to a real file came out. There was a first draft of that cost slide with an invented salary in it. That's why you got buttons you can set yourself instead.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO "HALF A DAY"]</span>
 
@@ -1047,25 +1069,24 @@ The distance between having an idea and having a working thing just got dramatic
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 14:45]</span>
-
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 14:45]</span>
 <span style="color:#c1121f;font-weight:700">[SLOW DOWN. THIS IS THE CLOSE — LET EACH LINE BREATHE.]</span>
 
-Four things I'd take away.
+So what do I take from all of this?
 
 <span style="color:#c1121f;font-weight:700">[POINT TO EACH LINE AS YOU SAY IT]</span>
 
-A prototype now costs hours rather than a release cycle — so "let's just try it" becomes a reasonable answer in a meeting.
+A prototype now costs hours rather than a release cycle. Which means "let's just try it and see" becomes a reasonable thing to say, instead of something we say and then quietly never do.
 
-You can build across technologies you haven't mastered. You still need to know what good looks like; you no longer need years in each one first.
+You can build across technologies you haven't mastered. You still need to know what good looks like — you just don't need years in each one first.
 
 Being wrong got cheap. If an attempt costs an afternoon, you can afford for most of them to fail.
 
-And the scarce skill moved — from writing the thing, to knowing what's worth building and telling whether what came back is any good.
+And the scarce skill moved. It used to be writing the thing. Now it's knowing what's worth building.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE. THEN READ THE QUOTE AT THE TOP, SLOWLY.]</span>
 
-So if you take one sentence out of this room, make it that one.
+If you take one sentence out of this room, make it that one.
 :::
 
 ##  {#thanks .center}
@@ -1099,7 +1120,6 @@ Nine hours, three dollars a month, and a thing that actually runs.
 
 ::: {.notes}
 <span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:15 — TOTAL 15:00]</span>
-
 Thank you.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE — 2 SECONDS. DO NOT RUSH INTO QUESTIONS.]</span>

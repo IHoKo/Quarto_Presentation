@@ -5,15 +5,29 @@ audience**. Ticker — a live stock dashboard with a streaming price feed, a
 FIFO portfolio ledger and an AI analyst — is the case study; the subject is
 how quickly an idea now becomes a working, deployed application.
 
-16 slides plus an uncounted backup, a live demo of the running app at
+17 slides plus an uncounted backup, a live demo of the running app at
 <https://ticker-dash.fly.dev/>, four Plotly charts, one Mermaid diagram, and a
 full spoken script in the speaker notes.
 
-The narrative arc is: the idea → the finished product → a live demo → why this
-is normally a two-week team project → it took nine hours → how → side by side
-→ what it means. **Slide 12 is the load-bearing one**: a traditional-vs-AI
-scorecard covering time, people, technologies, effort, iteration, debugging
-and cost.
+The deck is built as one continuous story, in six beats:
+
+| Slides | Beat |
+|---|---|
+| 1–3 | **Setup** — what the talk is about, what I was testing, what I wanted to build |
+| 4–5 | **The obstacle** — eighteen specialisms, and the two working weeks a team would schedule |
+| 6–9 | **The approach** — a plan not a prompt, the loop, what the AI added, where it still went wrong |
+| 10–11 | **The result** — what I ended up with, then the live demo |
+| 12–14 | **The payoff** — nine hours, the full comparison, the cost |
+| 15–17 | **The meaning** — this deck too, what changed, thank you |
+
+Every note ends on an explicit hand-off to the next slide, and slide 12 opens
+by calling back to the estimate planted on slide 5. **Slide 13 is the
+load-bearing one**: a traditional-vs-AI scorecard covering time, people,
+technologies, effort, iteration, debugging and cost.
+
+**The nine hours is a reveal, not a premise.** It is deliberately absent from
+the title slide, the footer and slide 10 so that slide 12 lands. If you edit,
+keep it that way.
 
 Jargon is kept off the slides. Every technical idea that survives — coalescing
 a price feed, FIFO accounting, a model that can propose but not write — is
@@ -84,8 +98,8 @@ embedded app still asks viewers for its own passphrase.
   in black is meant to be spoken. The two never look alike, so there is nothing
   to read aloud by accident.
 - Every slide opens with `[TARGET TIME: m:ss — TOTAL m:ss]`. **The deck totals
-  exactly 15:00**, and the script is written to *fit* that — 2,182 spoken words,
-  which is **145 wpm**, a normal conference pace. Per-slide budgets allow for
+  exactly 15:00**, and the script is written to *fit* that — 2,204 spoken words,
+  which is **147 wpm**, a normal conference pace. Per-slide budgets allow for
   the demo choreography, the chart clicks and the marked pauses, and no single
   slide needs more than 185 wpm.
 
@@ -93,8 +107,8 @@ embedded app still asks viewers for its own passphrase.
   219 wpm — which is not deliverable in fifteen minutes, and neither was the
   version before it. Word count is the constraint, not slide count.
 - `B` — chalkboard; `M` — menu; `F` — fullscreen; `ESC` — slide overview.
-- **Slide 4 is the live app** in an iframe, with step-by-step demo choreography
-  in the notes. **Slides 10 and 13 have live chart controls** — click them.
+- **Slide 11 is the live app** in an iframe, with step-by-step demo choreography
+  in the notes. **Slides 8 and 14 have live chart controls** — click them.
   No button shows an "active" highlight (plotly paints that nearly white, over
   a nearly white label); each of those charts states its current setting in its
   own on-chart annotation instead.
