@@ -878,16 +878,13 @@ But time is only part of it. Here's the whole thing side by side.
   <span class="sc-k">Writing the code</span>
   <span class="sc-v">~11,000 lines, by hand</span>
   <span class="sc-v new">Described, generated, reviewed</span>
-  <span class="sc-k">Iterating</span>
-  <span class="sc-v">Scheduled into a release</span>
-  <span class="sc-v new">One piece per sitting</span>
   <span class="sc-k">Finding the bugs</span>
   <span class="sc-v">Still the real work</span>
   <span class="sc-v new">Still the real work</span>
 </div>
 
 
-[Left column: the project's own written estimate, made before the build. Right column: measured from the finished project. The bottom two rows are qualitative comparisons, not measurements.]{.source}
+[Left column: the project's own written estimate, made before the build. Right column: measured from the finished project. The bottom row is a qualitative comparison, not a measurement.]{.source}
 
 ::: {.notes}
 <span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:55 — TOTAL 11:35]</span>
@@ -968,7 +965,7 @@ The distance between having an idea and having a working thing just got dramatic
 :::
 
 ::: {.takeaways style="margin-top:1.1em;max-width:38em"}
-[A prototype now costs **hours**, not a release cycle.]{.take}
+[A prototype now costs **hours**, not weeks.]{.take}
 [You can build across skills you have **not** mastered.]{.take}
 [Being wrong got **cheap** — so you can afford to try far more things.]{.take}
 [The scarce skill moved from writing it to **knowing what to build**.]{.take}
@@ -982,7 +979,7 @@ So — four things are different now.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO EACH LINE AS YOU SAY IT]</span>
 
-A prototype now costs hours rather than a release cycle. Which means "let's just try it" becomes a reasonable thing to say, instead of something we say and quietly never do.
+A prototype now costs hours rather than weeks. Which means "let's just try it" becomes a reasonable thing to say, instead of something we say and quietly never do.
 
 You can build across skills you haven't mastered. You still need to know what good looks like — you just don't need years in each one first.
 
