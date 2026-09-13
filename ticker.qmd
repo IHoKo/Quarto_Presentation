@@ -483,7 +483,7 @@ Five steps, and it really is this simple.
 
 <span style="color:#c1121f;font-weight:700">[TRACE THE DIAGRAM LEFT TO RIGHT AS YOU TALK]</span>
 
-I describe one piece — never the whole thing. The AI builds it and writes the tests at the same time. Then a set of automatic checks runs on its own — the tests, plus tools that read the code looking for mistakes. No person involved, and it's where the cheap errors get caught. Then I read it. Then it goes live.
+I describe one piece — never the whole thing. The AI builds it and writes the tests at the same time. Then a set of automatic checks runs on its own — the tests, plus tools that read the code looking for mistakes. No person involved, and it's where the easy mistakes get caught. Then I read it. Then it goes live.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE ARROW LOOPING BACK]</span>
 
@@ -491,7 +491,7 @@ And straight round again. Seven planned phases — and twenty-one trips around i
 
 <span style="color:#c1121f;font-weight:700">[SLOW DOWN — THIS IS THE VALUE POINT]</span>
 
-What matters is the speed of that loop, not any single step. Small pieces mean every mistake stays small. And because putting it live takes minutes instead of weeks, you find out you were wrong while you still remember what you did.
+Small pieces mean every mistake stays small. And because putting it live takes minutes instead of weeks, you find out you were wrong while you still remember what you did.
 
 <span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
 
@@ -597,7 +597,7 @@ That's the gold line. Keep only the newest price, and send it four times a secon
 
 <span style="color:#c1121f;font-weight:700">[CLICK "every 100 ms"]</span> Four times as often — and four times the load on every browser.
 
-<span style="color:#c1121f;font-weight:700">[CLICK "every 1000 ms"]</span> Once a second is cheap, but you can see it lagging.
+<span style="color:#c1121f;font-weight:700">[CLICK "every 1000 ms"]</span> Once a second is almost no load at all — but you can see it lagging.
 
 <span style="color:#c1121f;font-weight:700">[CLICK BACK TO "every 250 ms"]</span> A quarter of a second is what shipped.
 
