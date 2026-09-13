@@ -428,15 +428,15 @@ So — two weeks, a team, eighteen skills. Here's what I did instead.
 <span style="color:#c1121f;font-weight:700">[TARGET TIME: 1:00 — TOTAL 4:45]</span>
 Nobody opened a chat window and asked for a stock dashboard. The first thing made wasn't code — it was a plan. A thousand lines of plain English: what it should do, how it should behave when things go wrong, and what "finished" meant.
 
-<span style="color:#c1121f;font-weight:700">[SLOW DOWN — BE STRAIGHT ABOUT THIS]</span>
+<span style="color:#c1121f;font-weight:700">[SLOW DOWN — THIS IS THE CONCESSION]</span>
 
-And I'll be straight about how it got written. I didn't type all of it. I said what I wanted the product to be, and the plan came back drafted. My job was to read it, push back, and decide when it was settled.
+I should be honest about this part. I didn't type all of it. I said what I wanted the product to be, and the plan came back drafted. My job was to read it, push back, and decide when it was settled.
 
 Writing all that down is normally the slow, dreaded part — the thing that stops people ever starting. Here it was an afternoon.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE QUOTE — YOU CAN READ THIS ONE OUT]</span>
 
-My favorite line in the project. Don't paste one giant "build the whole thing" prompt — you get a mountain of code that all fails at once, and can't tell which part is wrong.
+This one line saved me the most trouble. Don't paste one giant "build the whole thing" prompt — you get a mountain of code that all fails at once, and can't tell which part is wrong.
 
 <span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
 
@@ -579,7 +579,11 @@ A popular stock like Apple has hundreds of trades every second.
 
 That grey cloud is three seconds of it. Nine hundred price updates.
 
-Now — your screen only actually redraws about sixty times a second. And every update makes the browser repaint the page, on the same thread that handles your clicks. Three hundred a second is way more than it can handle, so the work piles up and the tab stops responding.
+Now — your screen only actually redraws about sixty times a second. And these updates change text on the page, so each one puts the browser to work — recalculate, lay out, draw — on the same thread that handles your clicks.
+
+It isn't the raw number that hurts. It's that the work stops fitting in the gap between frames. So it piles up, and the tab stops responding.
+
+<span style="color:#c1121f;font-weight:700">[IF AN ENGINEER PUSHES BACK — DO NOT READ ALOUD: NOT EVERY DOM CHANGE COSTS LAYOUT AND PAINT; A COMPOSITED TRANSFORM OR OPACITY CHANGE LARGELY SKIPS BOTH. THESE ARE TEXT CHANGES, WHICH DO COST IT. AND 300/SEC IS NOT BAD BY ITSELF — WHAT MATTERS IS WHETHER THE WORK FITS THE MAIN THREAD'S FRAME BUDGET. CONCEDE BOTH, THEY ARE RIGHT.]</span>
 
 <span style="color:#c1121f;font-weight:700">[PAUSE — THEN SAY THIS PLAINLY, IT IS THE POINT OF THE SLIDE]</span>
 
@@ -589,9 +593,9 @@ I asked for live prices. What came back was live prices *and* a fix for a proble
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE GOLD STAIRCASE]</span>
 
-That's the gold line. Keep only the newest price, and send it four times a second. Nine hundred in, twelve out — and your eye can't tell the difference.
+That's the gold line. Keep only the newest price, and send it four times a second. Nine hundred in, twelve out.
 
-<span style="color:#c1121f;font-weight:700">[CLICK "every 100 ms"]</span> Four times more often — and four times the load on every browser.
+<span style="color:#c1121f;font-weight:700">[CLICK "every 100 ms"]</span> Four times as often — and four times the load on every browser.
 
 <span style="color:#c1121f;font-weight:700">[CLICK "every 1000 ms"]</span> Once a second is cheap, but you can see it lagging.
 
@@ -958,7 +962,7 @@ Then the same discipline: anything I couldn't trace back to a real file came out
 The whole deck took about half a day.
 :::
 
-## What actually changed {.center}
+## What actually changed {.center visibility="hidden"}
 
 ::: {.pull}
 The distance between having an idea and having a working thing just got dramatically shorter.
@@ -972,7 +976,7 @@ The distance between having an idea and having a working thing just got dramatic
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:45 — TOTAL 12:50]</span>
+<span style="color:#c1121f;font-weight:700">[HIDDEN SLIDE — NOT IN THE RUNNING TIME. WAS 0:45. TO RESTORE: DROP visibility="hidden" FROM THE HEADING AND ADD 0:45 TO THE THANKS SLIDE TOTAL.]</span>
 <span style="color:#c1121f;font-weight:700">[SLOW DOWN. THIS IS THE CLOSE — LET EACH LINE BREATHE.]</span>
 
 So — four things are different now.
@@ -1020,12 +1024,16 @@ Nine hours, three dollars a month, and a thing that actually runs.
 :::
 
 ::: {.notes}
-<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:15 — TOTAL 13:05]</span>
+<span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:25 — TOTAL 12:30]</span>
 Thank you.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE — 2 SECONDS. DO NOT RUSH INTO QUESTIONS.]</span>
 
 So that's the whole thing. Nine hours, about three dollars a month, and something that actually runs.
+
+<span style="color:#c1121f;font-weight:700">[SLOW DOWN — THIS IS THE POINT OF THE TALK]</span>
+
+But the real change isn't the app. It's that the distance between having an idea and having a working thing got a lot shorter.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE THREE LINKS]</span>
 
