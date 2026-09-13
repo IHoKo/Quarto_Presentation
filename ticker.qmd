@@ -165,7 +165,7 @@ Over the last few weeks I built a working application. It's called Ticker — a 
 
 It pulls share prices straight from the market as they change. You enter what you've bought and sold, and it works out what those holdings are worth now, and what they've made or lost. There's also an AI assistant built in that can answer questions about it.
 
-One thing up front: the portfolio you'll see is made up. The prices are real and the maths is real — the holdings are a test set.
+One thing up front: the portfolio you'll see is made up. The prices are real and the math is real — the holdings are a test set.
 
 And it's running on the internet right now.
 
@@ -253,7 +253,7 @@ Watch prices move as they happen. Know exactly what the holdings have made or lo
 
 <span style="color:#c1121f;font-weight:700">[PAUSE]</span>
 
-Anyone here could have asked for those three things.
+Three simple asks. Sounds easy enough.
 
 <span style="color:#c1121f;font-weight:700">[SLOW DOWN]</span>
 
@@ -276,7 +276,7 @@ So how much is really under those three sentences?
 
 ::: {style="margin-top:1.1em"}
 ::: {.pull}
-In most organisations, that list isn't one person. It's a team.
+In most organizations, that list isn't one person. It's a team.
 :::
 :::
 
@@ -369,11 +369,11 @@ show(fig)
 <span style="color:#c1121f;font-weight:700">[TARGET TIME: 0:50 — TOTAL 3:45]</span>
 Here's the answer. And it isn't my guess.
 
-Before any code was written, the AI drew up a plan for the whole thing — and sized it, phase by phase, from the scope it had just written: how many days one developer would need for each part. That's how any team estimates work.
+Before any code was written, the AI drew up a plan for the whole thing — and sized it, phase by phase, from the scope it had just written: how many days one developer would need for each part.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO CHART]</span>
 
-That's what the bars are — the same estimate, grouped by the kind of work it needs.
+That's what the bars are. It's a rough estimate the AI gave me, split up by the kind of work each part needs.
 
 <span style="color:#c1121f;font-weight:700">[EMPHASISE]</span>
 
@@ -436,7 +436,7 @@ Writing all that down is normally the slow, dreaded part — the thing that stop
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE QUOTE — YOU CAN READ THIS ONE OUT]</span>
 
-My favourite line in the project. Don't paste one giant "build the whole thing" prompt — you get a mountain of code that all fails at once, and can't tell which part is wrong.
+My favorite line in the project. Don't paste one giant "build the whole thing" prompt — you get a mountain of code that all fails at once, and can't tell which part is wrong.
 
 <span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
 
@@ -472,7 +472,7 @@ flowchart LR
 ```
 
 ::: {.pull style="margin-top:1.1em"}
-Seven phases. Twenty-one trips round the loop.
+Seven phases. Twenty-one trips around the loop.
 :::
 
 [Small pieces meant every mistake stayed small. And putting it live took minutes rather than weeks — so problems showed up while the work was still fresh.]{.caption}
@@ -487,7 +487,7 @@ I describe one piece — never the whole thing. The AI builds it and writes the 
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE ARROW LOOPING BACK]</span>
 
-And straight round again. Seven planned phases — and twenty-one trips round it in the end, because every fix went round too.
+And straight round again. Seven planned phases — and twenty-one trips around it in the end, because every fix went around too.
 
 <span style="color:#c1121f;font-weight:700">[SLOW DOWN — THIS IS THE VALUE POINT]</span>
 
@@ -634,7 +634,7 @@ Only visible once real requests hit a real market. Fixed by adding a second supp
 ::: {.card}
 [By looking at it]{.tag}[A chart that died on screen]{.h4}
 
-It asked for a colour by name, the name didn't exist, and it drew nothing. Every number was still correct. It took a screenshot to catch it.
+It asked for a color by name, the name didn't exist, and it drew nothing. Every number was still correct. It took a screenshot to catch it.
 :::
 :::
 
@@ -660,7 +660,7 @@ The third, I couldn't have found at my desk at all. The free price feed gives yo
 
 <span style="color:#c1121f;font-weight:700">[POINT TO BOTTOM-RIGHT]</span>
 
-And the fourth — nothing was broken. Not one number was wrong. A chart asked for a colour by a name that didn't exist, so it drew itself in nothing, on a dark background. The app was working perfectly, and you simply couldn't see it. No test catches that. It took somebody looking at a screenshot.
+And the fourth — nothing was broken. Not one number was wrong. A chart asked for a color by a name that didn't exist, so it drew itself in nothing, on a dark background. The app was working perfectly, and you simply couldn't see it. No test catches that. It took somebody looking at a screenshot.
 
 <span style="color:#c1121f;font-weight:700">[PAUSE]</span>
 
@@ -851,7 +851,7 @@ Nine hours.
 
 About nine times faster.
 
-One thing about that nine hours — I wasn't sat at my desk for nine hours straight. It's spread across evenings and weekends.
+One thing about that nine hours — I wasn't sitting at my desk for nine hours straight. It's spread across evenings and weekends.
 
 <span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
 
@@ -902,7 +902,7 @@ This row is the one I find most interesting, and it's the easiest to misread.
 
 The number of skills didn't go down. It's still eighteen. The app is exactly as complicated as it always was.
 
-What changed is that you no longer have to have mastered all eighteen before you're allowed to start. You still have to know what you're asking for, and recognise a bad answer.
+What changed is that you no longer have to have mastered all eighteen before you're allowed to start. You still have to know what you're asking for, and recognize a bad answer.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE "FINDING THE BUGS" ROW]</span>
 
@@ -1029,7 +1029,7 @@ So that's the whole thing. Nine hours, about three dollars a month, and somethin
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE THREE LINKS]</span>
 
-And if you want to have a look yourself, it's all here. The app is live, the code is public, and the slides are online.
+And if you want to take a look yourself, it's all here. The app is live, the code is public, and the slides are online.
 
 <span style="color:#c1121f;font-weight:700">[INVITE QUESTIONS]</span>
 
