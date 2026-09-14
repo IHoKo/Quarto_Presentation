@@ -715,7 +715,7 @@ About eleven thousand lines of code. Two hundred and ninety-one automated tests 
 
 And it does all three things I asked for at the start.
 
-Prices move live. The profit and loss is worked out the same way your broker does it for tax. And the analyst can read your holdings and put a change in front of you — but it can't make one itself. It has no way to. You press Confirm.
+<span style="color:#8b929c">Prices move live. The profit and loss is worked out the same way your broker does it for tax. And the analyst can read your holdings and put a change in front of you — but it can't make one itself. It has no way to. You press Confirm.</span>
 
 <span style="color:#c1121f;font-weight:700">[TRANSITION]</span>
 
