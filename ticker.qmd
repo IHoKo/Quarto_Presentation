@@ -373,11 +373,7 @@ Before any code was written, the AI drew up a plan for the whole thing — and s
 
 <span style="color:#c1121f;font-weight:700">[POINT TO CHART]</span>
 
-That's what the bars are. It's a rough estimate the AI gave me, split up by the kind of work each part needs.
-
-<span style="color:#c1121f;font-weight:700">[EMPHASISE]</span>
-
-And two things matter about this estimate. It was written before the build started. And it was never changed afterwards.
+It's a rough estimate the AI gave me.
 
 <span style="color:#c1121f;font-weight:700">[POINT TO THE BIG NUMBER — SAY IT SLOWLY, YOU COME BACK TO IT LATER]</span>
 
